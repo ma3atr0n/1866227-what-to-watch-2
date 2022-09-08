@@ -37,10 +37,7 @@ export default class CliApplication {
 
   public processCommand(argv: string[]): void {
     const parsedCommand = this.parseCommand(argv);
-    console.log('Комманда:', parsedCommand);
     const [commandName] = Object.keys(parsedCommand);
-    console.log('Выбранное имя команды:', commandName);
-    console.log('Список всех комманд:', this.commands);
     const command = this.getCommand(commandName);
     const commandArguments = parsedCommand[commandName] ?? [];
     command.execute(...commandArguments);
