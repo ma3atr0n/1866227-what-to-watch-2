@@ -1,18 +1,12 @@
 import { Genre } from './genre.enum.js';
-
-export type User = {
-  userName: string,
-  email: string,
-  avatarLink: string,
-  password: string,
-}
+import { User } from './user.type.js';
 
 export type Film = {
   name: string,
   description: string,
-  releaseDate: Date,
-  genre: Genre,
-  year: string,
+  releaseDate: string,
+  genre: keyof typeof Genre,
+  year: number,
   rate: number,
   previewVideoLink: string,
   videoLink: string,
