@@ -1,43 +1,35 @@
-import { readFileSync } from 'fs';
-import { Film } from '../../types/film.type.js';
-import { Genre } from '../../types/genre.enum.js';
+import { createReadStream } from 'fs';
+import { EventEmitter } from 'events';
 import { IFileReader } from './file-reader.interface.js';
 
-export default class TSVFileReader implements IFileReader {
-  private rawData = '';
+const READ_SIZE = 16384;
 
-  constructor(readonly fileName: string) {}
-
-  public read(): void {
-    this.rawData = readFileSync(this.fileName, {encoding: 'utf-8'});
+export default class TSVFileReader extends EventEmitter implements IFileReader {
+  constructor(readonly fileName: string) {
+    super();
   }
 
-  public toArray():Film[] {
-    if (!this.rawData) {
-      return [];
+  public async read(): Promise<void> {
+    const readStream = createReadStream(this.fileName, {
+      highWaterMark: READ_SIZE,
+      encoding: 'utf-8'
+    });
+
+    let lineRead = '';
+    let endLinePosition = -1;
+    let ImpotedRowCount = 0;
+
+    for await (const chunk  of readStream) {
+      lineRead += chunk.toString();
+      while ((endLinePosition = lineRead.indexOf('\n')) >= 0) {
+        const completeRow = lineRead.slice(0, endLinePosition + 1);
+        lineRead = lineRead.slice(++endLinePosition);
+        ImpotedRowCount++;
+
+        this.emit('line', completeRow);
+      }
     }
 
-    return this.rawData
-      .split('\r\n')
-      .filter((row) => row.trim() !== '')
-      .map((line) => line.split('\t'))
-      .map(([name, description, releaseDate, genre, year, rate, previewVideoLink, videoLink, starring, director, runTime, commentsCount, posterLink, bgLink, bgColor, userName, email, avatarLink, password]) => ({
-        name,
-        description,
-        releaseDate: new Date(releaseDate),
-        genre: genre as Genre,
-        year,
-        rate: Number.parseFloat(rate),
-        previewVideoLink,
-        videoLink,
-        starring: starring.split(';'),
-        director,
-        runTime: Number.parseInt(runTime, 10),
-        commentsCount: Number.parseInt(commentsCount, 10),
-        posterLink,
-        bgLink,
-        bgColor,
-        user: {userName, email, avatarLink, password},
-      }));
+    this.emit('end', ImpotedRowCount);
   }
 }
