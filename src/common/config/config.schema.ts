@@ -4,10 +4,13 @@ import validator from 'convict-format-with-validator';
 convict.addFormats(validator);
 
 export type ConfigSchema = {
-  PORT: number,
   NODE_ENV: string,
-  HOST: string,
   SALT: string
+  DB_HOST: string,
+  DB_PORT: number,
+  DB_NAME: string,
+  DB_USER: string,
+  DB_PASSWORD: string,
 }
 
 
@@ -18,23 +21,41 @@ export const configSchema = convict<ConfigSchema>({
     default: 'development',
     env: 'NODE_ENV'
   },
-  HOST: {
-    doc: 'The IP address to bind.',
-    format: 'ipaddress',
-    default: '127.0.0.1',
-    env: 'HOST',
-  },
-  PORT: {
-    doc: 'The port to bind.',
-    format: 'port',
-    default: 1234,
-    env: 'PORT',
-    arg: 'port'
-  },
   SALT: {
     doc: 'SALT environment',
     format: String,
     default: '',
     env: 'SALT'
+  },
+  DB_HOST: {
+    doc: 'The IP address to bind.',
+    format: 'ipaddress',
+    default: '127.0.0.1',
+    env: 'DB_HOST',
+  },
+  DB_PORT: {
+    doc: 'The port to bind.',
+    format: 'port',
+    default: 27017,
+    env: 'DB_PORT',
+    arg: 'port'
+  },
+  DB_NAME: {
+    doc: 'The Data Base name to bind.',
+    format: String,
+    default: 'films',
+    env: 'DB_NAME',
+  },
+  DB_USER: {
+    doc: 'The Data Base user to bind.',
+    format: String,
+    default: null,
+    env: 'DB_USER',
+  },
+  DB_PASSWORD: {
+    doc: 'The Data Base password to bind.',
+    format: String,
+    default: null,
+    env: 'DB_PASSWORD',
   }
 });
