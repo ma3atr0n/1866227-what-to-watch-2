@@ -25,11 +25,13 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
+    require: true,
     minLength: [6, 'User password min length is 6!'],
     maxLength: [12, 'User password max length is 12!'],
   },
 }, {
   timestamps: true,
 });
+
 
 export const userModel = mongoose.model<UserDocument>('User', userSchema);

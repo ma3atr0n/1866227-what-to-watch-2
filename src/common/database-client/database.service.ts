@@ -13,6 +13,7 @@ export class DBClient implements IDBClient {
 
   async connect(uri: string): Promise<void> {
     this.logger.info('Connection to DB...');
+    console.log(uri);
     await mongoose.connect(uri);
     this.logger.info('A connection to DB was successfully!');
   }
