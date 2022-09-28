@@ -5,7 +5,6 @@ import { Component } from '../types/component.types.js';
 import 'reflect-metadata';
 import { IDBClient } from '../common/database-client/database.interface.js';
 import { getURI } from '../utils/db.js';
-import { myModel } from '../modules/user/user.model.js';
 
 @injectable()
 export default class Application {
@@ -36,7 +35,5 @@ export default class Application {
     );
 
     await this.DBClient.connect(uri);
-
-    console.log(myModel.email);
   }
 }

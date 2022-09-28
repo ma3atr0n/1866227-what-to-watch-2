@@ -1,0 +1,677 @@
+openapi: 3.1.0
+
+info:
+  title: API серве для проект "Что посмотреть"
+  version: '1.0'
+  description: |-
+    * Список ресурсов и маршрутов сервера "Что посмотреть"
+servers:
+  - url: https://api.server.test/v1
+tags:
+  - name: users
+    description: Действия с пользователеми
+  - name: films
+    description: Действия с фильмами
+  - name: comments
+    description: Действия с комментариями
+paths:
+  /users/register:
+    post:
+      tags: 
+        - users
+      summary: Регистрация пользователя
+      description: Регистрация нового пользователя
+
+      requestBody:
+        description: Информация для создания нового пользователя
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/userCreate'
+        required: true
+
+      responses:
+        '201':
+          description: Пользоват зарегистрирован.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/token'
+
+        '409':
+          description: Пользоват c таким email уже существует.
+
+  /users/login:
+    post:
+      tags: 
+        - users
+      summary: Авторизация
+      description: Авторизация зарегистрированного пользователя
+
+      requestBody:
+          description: Информация для создания нового пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userLogin'
+          required: true
+
+      responses:
+        '200':
+          description: Пользователь успешно авторизован.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/token'
+
+        '400':
+          description: Ошибка тела запроса.
+
+    get:
+        tags: 
+          - users
+        summary: Проверка авторизации
+        description: Проверка авторизации пользователя
+
+        responses:
+          '200':
+            description: Статус авторизации пользователя.
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/user'
+
+          '401':
+            description: Пользователь не авторизован.
+
+  /users/logout:
+    delete:
+      tags: 
+        - users
+      summary: Завершает сеанс работы
+      description: Завершает сеанс работы — выход из закрытой части приложения.
+
+      responses:
+        '204':
+          description: Сеанс завершён.
+
+  /films/{filmId}:
+    delete:
+      tags: 
+        - films
+      summary: Удаление фильма по ID
+      description: Удаление карточки фильма
+
+      responses:
+        '200':
+          description: Фильм успешно удален
+
+        '400':
+          description: Ошибка тела запроса
+        
+        '401':
+          description: Пользователь не авторизован
+
+    get:
+      tags: 
+        - films
+      summary: Получить фильм
+      description: Возвращает фильм с идентификатором filmId
+
+      responses:
+        '200':
+          description: Объект фильма
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/film'
+
+        '400':
+          description: Ошибка тела запроса
+        
+        '401':
+          description: Пользователь не авторизован
+
+  /films/{genre}:
+    get:
+      tags: 
+        - films
+      summary: Получить фильмы по жанру
+      description: Получение списка фильмов определённого жанра
+
+      responses:
+        '200':
+          description: Фильмы по жарну получены
+
+        '400':
+          description: Ошибка тела запроса
+        
+        '401':
+          description: Пользователь не авторизован
+
+  /films:
+    post:
+      tags: 
+        - films
+      summary: Создание фильма
+      description: Добавление новой карточки фильма
+
+      requestBody:
+        description: Информация для создания новой карточки фильма
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/filmCreate'
+        required: true
+
+      responses:
+        '200':
+          description: Фильм успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/film'
+
+        '400':
+          description: Ошибка тела запроса
+        
+        '401':
+          description: Пользователь не авторизован
+
+    patch:
+      tags: 
+        - films
+      summary: Обновление фильма
+      description: Обновление карточки фильма
+
+      requestBody:
+        description: Информация для обновления карточки фильма
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/filmUpdate'
+        required: true
+
+      responses:
+        '200':
+          description: Фильм успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/film'
+
+        '400':
+          description: Ошибка тела запроса
+        
+        '401':
+          description: Пользователь не авторизован
+
+    get:
+      tags: 
+        - films
+      summary: Получить фильмы
+      description: Получение списка фильмов
+
+      requestBody:
+        description: Информация для получения списка фильмов
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filmCount:
+                  type: number
+                  example: 5
+        required: false
+
+      responses:
+        '200':
+          description: Список фильмов получен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filmShortArray'
+
+        '400':
+          description: Ошибка тела запроса
+        
+        '401':
+          description: Пользователь не авторизован
+
+  /promo:
+    get:
+      tags: 
+        - films
+      summary: Получить промо-фильм
+      description: Возвращает фильм в виде объекта.
+
+      responses:
+        '200':
+          description: Объект фильма
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/film'
+
+  /favorite:
+    get:
+      tags: 
+        - films
+      summary: Получить список фильмов «к просмотру»
+      description: Возвращает массив фильмов, добавленных в список «к просмотру»
+
+      responses:
+        '200':
+          description: Массив фильмов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/filmShortArray'
+
+  /favorite/{filmId}/{status}:
+    get:
+      tags: 
+        - films
+      summary: Изменить статус «к просмотру» у фильма
+      description: Возвращает фильм с идентификатором filmId с актуальным состоянием поля isFavorite
+
+      requestBody:
+        description: Информация для получения списка фильмов
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filmId:
+                  type: number
+                  example: 5
+                
+                status:
+                  type: number
+                  example: 1  
+        required: true
+
+      responses:
+        '200':
+          description: Объект фильма
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/film'
+
+        '401':
+          description: Пользователь не авторизован
+
+  /comments/{filmId}:
+    get:
+      tags: 
+        - comments
+      summary: Получить список комментариев
+      description: Получить список комментариев для определённого фильма
+
+      '200':
+          description: Объект комментария
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/comment'
+
+    post:
+      tags: 
+        - comments
+      summary: Добавить новый комментарий
+      description: Добавить новый комментарий к определённому фильму
+
+      requestBody:
+        description: Информация для добавления комментария
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/commentCreate'
+        required: true
+
+      '200':
+          description: Объект комментария
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/comment'
+
+      '400':
+          description: Ошибка тела запроса
+
+      '401':
+          description: Пользователь не авторизован
+    
+components:
+  schemas:
+    userCreate:
+      type: object
+
+      properties:
+        userName:
+          type: string
+          example: MyUserName
+
+        email:
+          type: string
+          example: myadress@mail.ru
+
+        avatarLink:
+          type: string
+          example: https://photos.ru/avatar.jpg
+
+        password:
+          type: string
+          example: 123456
+
+    userLogin:
+      type: object
+
+      properties:
+        userName:
+          type: string
+          example: MyUserName
+
+        password:
+          type: string
+          example: 123456
+    
+    user:
+      type: object
+
+      properties:
+        id:
+          type: string
+          example: 6330a6be9eecf0bb0c9a7672
+
+        userName:
+          type: string
+          example: MyUserName
+
+        email:
+          type: string
+          example: myadress@mail.ru
+
+        avatarLink:
+          type: string
+          example: https://photos.ru/avatar.jpg
+
+    token:
+      type: object
+
+      properties:
+        token:
+          type: string
+          example: T2xpdmVyLmNvbm5lckBnbWFpbC5jb20=
+    
+    filmCreate:
+      type: object
+
+      properties:
+        name:
+          type: string
+          example: Топ Ган
+
+        description:
+          type: string
+          example: Мэверик	Пит Митчелл по прозвищу Мэверик более 30
+
+        releaseDate:
+          type: string
+          example: 2022-09-01
+
+        genre:
+          type: string
+          example: scifi
+
+        year:
+          type: number
+          example: 2022
+
+        previewVideoLink:
+          type: string
+          example: http://previewvideo1.com
+
+        videoLink:
+          type: string
+          example: http://video1.com
+
+        starring:
+          type: [string]
+          example: [Том Круз, Майлз Теллер, Дженнифер Коннелли]
+
+        director:
+          type: string
+          example: Стивен Найт
+
+        runTime:
+          type: number
+          example: 186
+
+        posterLink:
+          type: string
+          example: http://poster2/1.jpg
+
+        bgLink:
+          type: string
+          example: http://bg2/1.jpg
+
+        bgColor:
+          type: string
+          example: '#ffffff'
+
+        user:
+          $ref: '#/components/schemas/user'
+
+    filmUpdate:
+      type: object
+
+      properties:
+        id:
+          type: number
+          example: 1
+
+        name:
+          type: string
+          example: Топ Ган
+
+        description:
+          type: string
+          example: Мэверик	Пит Митчелл по прозвищу Мэверик более 30
+
+        releaseDate:
+          type: string
+          example: 2022-09-01
+
+        genre:
+          type: string
+          example: scifi
+
+        year:
+          type: number
+          example: 2022
+
+        previewVideoLink:
+          type: string
+          example: http://previewvideo1.com
+
+        videoLink:
+          type: string
+          example: http://video1.com
+
+        starring:
+          type: [string]
+          example: [Том Круз, Майлз Теллер, Дженнифер Коннелли]
+
+        director:
+          type: string
+          example: Стивен Найт
+
+        runTime:
+          type: number
+          example: 186
+
+        posterLink:
+          type: string
+          example: http://poster2/1.jpg
+
+        bgLink:
+          type: string
+          example: http://bg2/1.jpg
+
+        bgColor:
+          type: string
+          example: '#ffffff'
+
+        user:
+          $ref: '#/components/schemas/user'
+
+    filmShortArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/filmShort'
+
+    film:
+      type: object
+
+      properties:
+        id:
+          type: number
+          example: 1
+
+        name:
+          type: string
+          example: Топ Ган
+
+        description:
+          type: string
+          example: Мэверик	Пит Митчелл по прозвищу Мэверик более 30
+
+        releaseDate:
+          type: string
+          example: 2022-09-01
+
+        genre:
+          type: string
+          example: scifi
+
+        year:
+          type: number
+          example: 2022
+        
+        rate:
+          type: number
+          example: 7.5
+
+        previewVideoLink:
+          type: string
+          example: http://previewvideo1.com
+
+        videoLink:
+          type: string
+          example: http://video1.com
+
+        starring:
+          type: [string]
+          example: [Том Круз, Майлз Теллер, Дженнифер Коннелли]
+
+        director:
+          type: string
+          example: Стивен Найт
+
+        runTime:
+          type: number
+          example: 186
+        
+        commentCount:
+          type: number
+          example: 10
+
+        posterLink:
+          type: string
+          example: http://poster2/1.jpg
+
+        bgLink:
+          type: string
+          example: http://bg2/1.jpg
+
+        bgColor:
+          type: string
+          example: '#ffffff'
+
+        user:
+          $ref: '#/components/schemas/user'
+          
+    filmShort:
+      type: object
+
+      properties:
+          name:
+            type: string
+            example: Топ Ган
+
+          releaseDate:
+            type: string
+            example: 2022-09-01
+
+          genre:
+            type: string
+            example: scifi
+
+          previewVideoLink:
+            type: string
+            example: http://previewvideo1.com
+
+          posterLink:
+            type: string
+            example: http://poster2/1.jpg
+
+          commentCount:
+            type: number
+            example: 10
+
+          user:
+            $ref: '#/components/schemas/user'
+
+    commentCreate:
+      type: object
+
+      properties:
+          text:
+            type: string
+            example: Привет! Я комментарий!
+
+          rate:
+            type: numer
+            example: 3.2
+
+          date:
+            type: string
+            example: 2022-09-01
+
+          user:
+            $ref: '#/components/schemas/user'    
+
+    comment:
+      type: object
+
+      properties:
+          id:
+            type: number
+            example: 1
+            
+          text:
+            type: string
+            example: Привет! Я комментарий!
+
+          rate:
+            type: numer
+            example: 3.2
+
+          date:
+            type: string
+            example: 2022-09-01
+
+          user:
+            $ref: '#/components/schemas/user'  
