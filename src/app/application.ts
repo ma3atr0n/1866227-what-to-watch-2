@@ -39,15 +39,6 @@ export default class Application {
 
     await this.DBClient.connect(uri);
 
-    // const comment = {
-    //   comment: '123554322asdf',
-    //   rating: 5,
-    //   date: '2020-01-02',
-    //   userId: '6330a6be9eecf0bb0c9a7672'
-    // };
-
-    // const result = await this.commentService.create('6330a6be9eecf0bb0c9a7675', comment);
-    //const result = await this.filmService.findDetails('6330a6be9eecf0bb0c9a7675');
     const result = await this.commentService.find('6330a6be9eecf0bb0c9a7675');
     console.log(result);
   }
