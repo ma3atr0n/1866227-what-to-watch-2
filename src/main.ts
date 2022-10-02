@@ -7,6 +7,9 @@ import { IDBClient } from './common/database-client/database.interface.js';
 import { DBClient } from './common/database-client/database.service.js';
 import { ILogger } from './common/logger/logger.interface.js';
 import { LoggerService } from './common/logger/logger.service.js';
+import { ICommentService } from './modules/comment/comment-service.interface.js';
+import { CommentEntity, commentModel } from './modules/comment/comment.entity.js';
+import CommentService from './modules/comment/comment.service.js';
 import { IFilmService } from './modules/film/film-service.interface.js';
 import { FilmEntity, filmModel } from './modules/film/film.entity.js';
 import { FilmService } from './modules/film/film.service.js';
@@ -24,6 +27,8 @@ applicationContainer.bind<IUserService>(Component.IUserService).to(UserService);
 applicationContainer.bind<types.ModelType<UserEntity>>(Component.userModel).toConstantValue(userModel);
 applicationContainer.bind<IFilmService>(Component.IFilmService).to(FilmService);
 applicationContainer.bind<types.ModelType<FilmEntity>>(Component.filmModel).toConstantValue(filmModel);
+applicationContainer.bind<ICommentService>(Component.ICommentService).to(CommentService);
+applicationContainer.bind<types.ModelType<CommentEntity>>(Component.commentModel).toConstantValue(commentModel);
 
 const application = applicationContainer.get<Application>(Component.Application);
 await application.init();

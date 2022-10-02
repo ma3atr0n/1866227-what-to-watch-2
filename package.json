@@ -10,7 +10,7 @@
   "main": "main.js",
   "scripts": {
     "start": "npm run build && node ./dist/main.js",
-    "start:dev": "npm run ts ./src/main.ts | pino-pretty --colorize --translateTime SYS:standard",
+    "start:dev": "nodemon",
     "start:import": "npm run ts ./src/cli.ts -- --import ./src/mocks/mock-films.tsv admin test 127.0.0.1 films 123TEST",
     "build": "npm run clean && npm run compile",
     "lint": "eslint src/ --ext .ts",
@@ -49,6 +49,7 @@
     "inversify": "^6.0.1",
     "mongoose": "^6.6.1",
     "pino": "^8.5.0",
-    "reflect-metadata": "^0.1.13"
+    "reflect-metadata": "^0.1.13",
+    "nodemon": "^2.0.16"
   }
 }
