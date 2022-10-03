@@ -94,8 +94,8 @@ export class FilmService implements IFilmService {
       ]).exec();
   }
 
-  public async findByGenre(genre: keyof typeof Genre): Promise<DocumentType<FilmEntity>[]> {
-    const result = await this.find();
+  public async findByGenre(genre: keyof typeof Genre, count?: number): Promise<DocumentType<FilmEntity>[]> {
+    const result = await this.find(count);
 
     return result.filter((elem) => elem.genre === genre);
   }
