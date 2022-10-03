@@ -97,8 +97,8 @@ export class FilmEntity extends defaultClasses.TimeStamps {
   @prop({
     required:true,
     validate: {
-      validator: (posterLink: string) => posterLink.endsWith('.jpg'),
-      message: 'Poster is not JPG file!'
+      validator: (bgLink: string) => bgLink.endsWith('.jpg'),
+      message: 'Background image is not JPG file!'
     }
   })
   public bgLink!: string;
@@ -107,6 +107,13 @@ export class FilmEntity extends defaultClasses.TimeStamps {
     required:true
   })
   public bgColor!: string;
+
+  @prop({
+    required: true,
+    default: false,
+  })
+  public isFavorite!: boolean;
+
 }
 
 export const filmModel = getModelForClass(FilmEntity);

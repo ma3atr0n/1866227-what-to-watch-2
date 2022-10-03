@@ -7,4 +7,6 @@ export const Component = {
   userModel: Symbol.for('userModel'),
   IFilmService: Symbol.for('IFilmService'),
   filmModel: Symbol.for('filmModel'),
+  ICommentService: Symbol.for('ICommentService'),
+  commentModel: Symbol.for('commentModel'),
 };

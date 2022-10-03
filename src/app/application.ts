@@ -5,6 +5,7 @@ import { Component } from '../types/component.types.js';
 import 'reflect-metadata';
 import { IDBClient } from '../common/database-client/database.interface.js';
 import { getURI } from '../utils/db.js';
+import { ICommentService } from '../modules/comment/comment-service.interface.js';
 
 @injectable()
 export default class Application {
@@ -16,6 +17,8 @@ export default class Application {
     @inject(Component.ILogger) logger: ILogger,
     @inject(Component.IConfig) config: IConfig,
     @inject(Component.IDBClient) DBClient: IDBClient,
+  //@inject(Component.ICommentService) private commentService: ICommentService,
+  @inject(Component.ICommentService) private commentService: ICommentService,
   ) {
     this.logger = logger;
     this.config = config;
@@ -35,5 +38,8 @@ export default class Application {
     );
 
     await this.DBClient.connect(uri);
+
+    const result = await this.commentService.find('6330a6be9eecf0bb0c9a7675');
+    console.log(result);
   }
 }
