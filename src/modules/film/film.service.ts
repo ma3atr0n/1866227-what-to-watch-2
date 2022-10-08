@@ -8,6 +8,7 @@ import createFilmDto from './dto/create-film.dto.js';
 import { IFilmService } from './film-service.interface.js';
 import { FilmEntity } from './film.entity.js';
 import { Types } from 'mongoose';
+import UpdateFilmDTO from './dto/update-film.dto.js';
 
 const DEFAULT_FILM_LIMIT = 60;
 
@@ -25,10 +26,10 @@ export class FilmService implements IFilmService {
     return result;
   }
 
-  public async updateById(filmId: string, dto: createFilmDto): Promise<DocumentType<FilmEntity> | null> {
+  public async updateById(filmId: string, dto: UpdateFilmDTO): Promise<DocumentType<FilmEntity> | null> {
     return this.filmModel
       .findByIdAndUpdate(filmId, dto, {new: true})
-      .populate(['user'])
+      .populate('userId')
       .exec();
   }
 
@@ -39,7 +40,10 @@ export class FilmService implements IFilmService {
   }
 
   public async findById(filmId: string): Promise<DocumentType<FilmEntity> | null> {
-    return this.filmModel.findById(filmId).exec();
+    return this.filmModel
+      .findById(filmId)
+      .populate('userId')
+      .exec();
   }
 
   public async findByName(name: string): Promise<DocumentType<FilmEntity> | null> {

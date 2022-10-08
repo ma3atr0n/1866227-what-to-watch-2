@@ -11,6 +11,7 @@ import { IConfig } from '../../common/config/config.interface.js';
 import { fillResponse } from '../../utils/common.js';
 import UserResponse from './response/user.response.js';
 import HttpError from '../../common/errors/http-error.js';
+import LoginDTO from './dto/login.dto.js';
 
 @injectable()
 export default class UserController extends Controller {
@@ -23,16 +24,59 @@ export default class UserController extends Controller {
 
     this.logger.info('Register routes for UserController...');
 
-    this.addRoute({path: '/', method: HttpMethod.Get, handler: this.index});
-    this.addRoute({path: '/', method: HttpMethod.Post, handler: this.create});
+    this.addRoute({path: '/login', method: HttpMethod.Post, handler: this.login});
+    this.addRoute({path: '/login', method: HttpMethod.Get, handler: this.authCheck});
+    this.addRoute({path: '/logout', method: HttpMethod.Delete, handler: this.logout});
+    this.addRoute({path: '/register', method: HttpMethod.Post, handler: this.create});
   }
 
-  public async index(_req: Request, res: Response) {
-    const result = await this.userService.find();
-    this.send(res, StatusCodes.OK, result);
+  public async login(
+    {body}: Request<Record<string, unknown>, Record<string, unknown>, LoginDTO>,
+    _res: Response
+  ): Promise<void> {
+    const existUser = await this.userService.findByEmail(body.email);
+
+    if (!existUser) {
+      throw new HttpError(
+        StatusCodes.UNAUTHORIZED,
+        `User with email: ${body.email} unauthorized`,
+        'userController'
+      );
+    }
+
+    throw new HttpError(
+      StatusCodes.NOT_IMPLEMENTED,
+      'This service (LOGIN) not implemented',
+      'userController'
+    );
   }
 
-  public async create({body}: Request<Record<string, unknown>, Record<string, unknown>, CreateUserDTO>, res: Response): Promise<void> {
+  public async authCheck(
+    _req: Request,
+    _res: Response,
+  ): Promise<void> {
+    throw new HttpError(
+      StatusCodes.NOT_IMPLEMENTED,
+      'This service (authCheck) not implemented',
+      'userController'
+    );
+  }
+
+  public async logout(
+    _req: Request,
+    _res: Response
+  ): Promise<void> {
+    throw new HttpError(
+      StatusCodes.NOT_IMPLEMENTED,
+      'This service (LOGOUT) not implemented',
+      'userController'
+    );
+  }
+
+  public async create(
+    {body}: Request<Record<string, unknown>, Record<string, unknown>, CreateUserDTO>,
+    res: Response
+  ): Promise<void> {
     const existUser = await this.userService.findByEmail(body.email);
 
     if (existUser) {

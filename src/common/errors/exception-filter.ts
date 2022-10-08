@@ -30,7 +30,6 @@ export default class ExceptionFilter implements IExceptionFilter {
   }
 
   public catch(error: Error | HttpError, req: Request, res: Response, next: NextFunction): void {
-    console.log('123');
     if (error instanceof HttpError) {
       return this.httpErrorhandler(error, req, res, next);
     }

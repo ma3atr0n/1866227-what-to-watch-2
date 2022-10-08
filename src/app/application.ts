@@ -18,6 +18,7 @@ export default class Application {
     @inject(Component.IConfig) private config: IConfig,
     @inject(Component.IDBClient) private DBClient: IDBClient,
     @inject(Component.userController) private userController: IController,
+    @inject(Component.filmController) private filmController: IController,
     @inject(Component.IExceptionFilter) private exceptionFilter: IExceptionFilter,
   ) {
     this.expressApp = express();
@@ -25,13 +26,14 @@ export default class Application {
 
   public initRouters() {
     this.expressApp.use('/users', this.userController.router);
+    this.expressApp.use('/films', this.filmController.router);
   }
 
   public initMiddleware() {
     this.expressApp.use(express.json());
   }
 
-  public initExceptionFilter() {
+  public initExceptionFilters() {
     this.expressApp.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
   }
 
@@ -50,8 +52,8 @@ export default class Application {
     await this.DBClient.connect(uri);
 
     this.initMiddleware();
-    this.initExceptionFilter();
     this.initRouters();
+    this.initExceptionFilters();
     this.expressApp.listen(this.config.get('APP_PORT'));
     this.logger.info(`Server started on port: ${this.config.get('APP_PORT')}`);
   }

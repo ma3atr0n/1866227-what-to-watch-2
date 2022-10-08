@@ -14,6 +14,7 @@ import { ICommentService } from './modules/comment/comment-service.interface.js'
 import { CommentEntity, commentModel } from './modules/comment/comment.entity.js';
 import CommentService from './modules/comment/comment.service.js';
 import { IFilmService } from './modules/film/film-service.interface.js';
+import FilmController from './modules/film/film.controller.js';
 import { FilmEntity, filmModel } from './modules/film/film.entity.js';
 import { FilmService } from './modules/film/film.service.js';
 import { IUserService } from './modules/user/user-service.interface.js';
@@ -36,6 +37,7 @@ applicationContainer.bind<types.ModelType<CommentEntity>>(Component.commentModel
 
 applicationContainer.bind<IExceptionFilter>(Component.IExceptionFilter).to(ExceptionFilter);
 applicationContainer.bind<IController>(Component.userController).to(UserController);
+applicationContainer.bind<IController>(Component.filmController).to(FilmController);
 
 const application = applicationContainer.get<Application>(Component.Application);
 await application.init();
