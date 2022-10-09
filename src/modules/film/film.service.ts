@@ -89,7 +89,7 @@ export class FilmService implements IFilmService {
   }
 
   public async find(limit?: number): Promise<DocumentType<FilmEntity>[]> {
-    const parsedLimit = limit ?? DEFAULT_FILM_LIMIT;
+    const parsedLimit = limit && limit > 0 ? limit : DEFAULT_FILM_LIMIT;
     return this.filmModel
       .aggregate([
         {
@@ -123,8 +123,8 @@ export class FilmService implements IFilmService {
       ]).exec();
   }
 
-  public async findByGenre(genre: keyof typeof Genre, count?: number): Promise<DocumentType<FilmEntity>[]> {
-    const result = await this.find(count);
+  public async findByGenre(genre: keyof typeof Genre, limit?: number): Promise<DocumentType<FilmEntity>[]> {
+    const result = await this.find(limit);
 
     return result.filter((elem) => elem.genre === genre);
   }
@@ -167,7 +167,9 @@ export class FilmService implements IFilmService {
   }
 
   public async findPromo(): Promise<DocumentType<FilmEntity> | null> {
-    return this.filmModel.findOne({}).sort({ releaseDate: -1 }).exec();
+    const result = await this.find();
+
+    return result[0];
   }
 
   public async findAndChangeFavoriteStatus(filmId: string, status: 0 | 1): Promise<DocumentType<FilmEntity> | null> {
@@ -175,6 +177,36 @@ export class FilmService implements IFilmService {
   }
 
   public async findFavorites(): Promise<DocumentType<FilmEntity>[]> {
-    return this.filmModel.find({isFavorite: true}).exec();
+    return this.filmModel
+      .aggregate([
+        {$match: {isFavorite: true}},
+        {
+          $lookup: {
+            from: 'comments',
+            localField: '_id',
+            foreignField: 'filmId',
+            as: 'comments'
+          }
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'userId',
+            foreignField: '_id',
+            as: 'user'
+          }
+        },
+        { $unwind: {
+          path :'$user',
+          preserveNullAndEmptyArrays: true}
+        },
+        {
+          $addFields: {
+            commentCount: { $size: '$comments'}, rating: { $avg: '$comments.rating'}
+          }
+        },
+        { $unset: 'comments' },
+        { $sort: { releaseDate: -1 } },
+      ]).exec();
   }
 }

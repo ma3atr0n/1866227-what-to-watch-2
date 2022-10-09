@@ -12,4 +12,6 @@ export const Component = {
   IExceptionFilter: Symbol.for('IExceptionFilter'),
   userController: Symbol.for('userController'),
   filmController: Symbol.for('filmController'),
+  filmPromoController: Symbol.for('filmPromoController'),
+  filmFavoriteController: Symbol.for('filmFavoriteController'),
 };

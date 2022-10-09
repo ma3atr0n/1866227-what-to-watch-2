@@ -19,6 +19,8 @@ export default class Application {
     @inject(Component.IDBClient) private DBClient: IDBClient,
     @inject(Component.userController) private userController: IController,
     @inject(Component.filmController) private filmController: IController,
+    @inject(Component.filmPromoController) private filmPromoController: IController,
+    @inject(Component.filmFavoriteController) private filmFavoriteController: IController,
     @inject(Component.IExceptionFilter) private exceptionFilter: IExceptionFilter,
   ) {
     this.expressApp = express();
@@ -27,6 +29,8 @@ export default class Application {
   public initRouters() {
     this.expressApp.use('/users', this.userController.router);
     this.expressApp.use('/films', this.filmController.router);
+    this.expressApp.use('/promo', this.filmPromoController.router);
+    this.expressApp.use('/favorite', this.filmFavoriteController.router);
   }
 
   public initMiddleware() {

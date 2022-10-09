@@ -13,6 +13,8 @@ import { LoggerService } from './common/logger/logger.service.js';
 import { ICommentService } from './modules/comment/comment-service.interface.js';
 import { CommentEntity, commentModel } from './modules/comment/comment.entity.js';
 import CommentService from './modules/comment/comment.service.js';
+import FilmFavoriteController from './modules/film/film-favorite.controller.js';
+import FilmPromoController from './modules/film/film-promo.controller.js';
 import { IFilmService } from './modules/film/film-service.interface.js';
 import FilmController from './modules/film/film.controller.js';
 import { FilmEntity, filmModel } from './modules/film/film.entity.js';
@@ -38,6 +40,8 @@ applicationContainer.bind<types.ModelType<CommentEntity>>(Component.commentModel
 applicationContainer.bind<IExceptionFilter>(Component.IExceptionFilter).to(ExceptionFilter);
 applicationContainer.bind<IController>(Component.userController).to(UserController);
 applicationContainer.bind<IController>(Component.filmController).to(FilmController);
+applicationContainer.bind<IController>(Component.filmPromoController).to(FilmPromoController);
+applicationContainer.bind<IController>(Component.filmFavoriteController).to(FilmFavoriteController);
 
 const application = applicationContainer.get<Application>(Component.Application);
 await application.init();
