@@ -1,5 +1,4 @@
 import { Genre } from '../../../types/genre.enum.js';
-import { User } from '../../../types/user.type.js';
 
 export default class CreateFilmDTO {
   name!: string;
@@ -15,5 +14,5 @@ export default class CreateFilmDTO {
   posterLink!: string;
   bgLink!: string;
   bgColor!: string;
-  userId!: User;
+  userId!: string;
 }
