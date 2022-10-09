@@ -5,24 +5,40 @@ import { Component } from '../types/component.types.js';
 import 'reflect-metadata';
 import { IDBClient } from '../common/database-client/database.interface.js';
 import { getURI } from '../utils/db.js';
-import { ICommentService } from '../modules/comment/comment-service.interface.js';
+import express, { Express } from 'express';
+import { IController } from '../common/controller/controller.interface.js';
+import { IExceptionFilter } from '../common/errors/exception-filter.interface.js';
 
 @injectable()
 export default class Application {
-  private logger!: ILogger;
-  private config!: IConfig;
-  private DBClient!: IDBClient;
+  private expressApp!: Express;
 
   constructor(
-    @inject(Component.ILogger) logger: ILogger,
-    @inject(Component.IConfig) config: IConfig,
-    @inject(Component.IDBClient) DBClient: IDBClient,
-  //@inject(Component.ICommentService) private commentService: ICommentService,
-  @inject(Component.ICommentService) private commentService: ICommentService,
+    @inject(Component.ILogger) private logger: ILogger,
+    @inject(Component.IConfig) private config: IConfig,
+    @inject(Component.IDBClient) private DBClient: IDBClient,
+    @inject(Component.userController) private userController: IController,
+    @inject(Component.filmController) private filmController: IController,
+    @inject(Component.filmPromoController) private filmPromoController: IController,
+    @inject(Component.filmFavoriteController) private filmFavoriteController: IController,
+    @inject(Component.IExceptionFilter) private exceptionFilter: IExceptionFilter,
   ) {
-    this.logger = logger;
-    this.config = config;
-    this.DBClient = DBClient;
+    this.expressApp = express();
+  }
+
+  public initRouters() {
+    this.expressApp.use('/users', this.userController.router);
+    this.expressApp.use('/films', this.filmController.router);
+    this.expressApp.use('/promo', this.filmPromoController.router);
+    this.expressApp.use('/favorite', this.filmFavoriteController.router);
+  }
+
+  public initMiddleware() {
+    this.expressApp.use(express.json());
+  }
+
+  public initExceptionFilters() {
+    this.expressApp.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
   }
 
   public async init() {
@@ -39,7 +55,11 @@ export default class Application {
 
     await this.DBClient.connect(uri);
 
-    const result = await this.commentService.find('6330a6be9eecf0bb0c9a7675');
-    console.log(result);
+    this.initMiddleware();
+    this.initRouters();
+    this.initExceptionFilters();
+    this.expressApp.listen(this.config.get('APP_PORT'));
+    this.logger.info(`Server started on port: ${this.config.get('APP_PORT')}`);
   }
 }
+

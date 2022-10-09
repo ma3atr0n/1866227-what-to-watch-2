@@ -1,3 +1,71 @@
-GET http://localhost:3123/api HTTP/1.1
+GET http://localhost:4000/users HTTP/1.1
+Content-Type: application/json
 
 ###
+POST http://localhost:4000/users/register HTTP/1.1
+Content-Type: application/json
+
+{
+  "userName": "new1User",
+  "email": "new1User@mail.ru",
+  "avatarLink": "http://ava.jpg",
+  "password": "123456"
+}
+
+###
+POST http://localhost:4000/films HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "test",
+  "description": "testtesttesttesttesttesttesttesttesttesttesttest",
+  "releaseDate": "2020-01-01",
+  "genre": "drama",
+  "year": "2022",
+  "previewVideoLink": "test.pm4",
+  "videoLink": "test",
+  "starring": ["test1","test2"],
+  "director": "test",
+  "runTime": "123",
+  "posterLink": "test.jpg",
+  "bgLink": "test.jpg",
+  "bgColor": "#ffffff",
+  "userId": "633f27391a8c4c0a1a1656ae"
+}
+
+###
+PATCH http://localhost:4000/films/63417a03ea7fc6310a277cfd HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "testNEW3",
+  "description": "testtesttesttesttesttesttesttesttesttesttesttest",
+  "releaseDate": "2020-01-01",
+  "genre": "drama",
+  "year": "2022",
+  "previewVideoLink": "test.pm4",
+  "videoLink": "test",
+  "starring": ["test1","test2"],
+  "director": "test",
+  "runTime": "123",
+  "posterLink": "test.jpg",
+  "bgLink": "test.jpg",
+  "bgColor": "#ffffff",
+  "userId": "633f27391a8c4c0a1a1656ae"
+}
+
+###
+DELETE http://localhost:4000/films/63419432ab9803ef62f90348 HTTP/1.1
+Content-Type: application/json
+
+###
+GET http://localhost:4000/films?limit=2 HTTP/1.1
+Content-Type: application/json
+
+###
+GET http://localhost:4000/films/genre/drama HTTP/1.1
+Content-Type: application/json
+
+###
+GET http://localhost:4000/films/63417a03ea7fc6310a277cfd HTTP/1.1
+Content-Type: application/json

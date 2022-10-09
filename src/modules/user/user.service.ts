@@ -1,11 +1,12 @@
 import { DocumentType, types } from '@typegoose/typegoose';
-import { inject } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { ILogger } from '../../common/logger/logger.interface.js';
 import { Component } from '../../types/component.types.js';
 import CreateUserDTO from './dto/create-user.dto.js';
 import { IUserService } from './user-service.interface.js';
 import { UserEntity } from './user.entity.js';
 
+@injectable()
 export class UserService implements IUserService {
   constructor(
     @inject(Component.ILogger) private logger: ILogger,
@@ -38,5 +39,9 @@ export class UserService implements IUserService {
     }
 
     return this.create(dto, salt);
+  }
+
+  public async find(): Promise<DocumentType<UserEntity>[]> {
+    return this.userModel.find().exec();
   }
 }

@@ -80,10 +80,10 @@ export class FilmEntity extends defaultClasses.TimeStamps {
   public runTime!: number;
 
   @prop({
-    required:true,
     ref: UserEntity,
+    required: true
   })
-  public user!: Ref<UserEntity>;
+  public userId!: Ref<UserEntity>;
 
   @prop({
     required:true,

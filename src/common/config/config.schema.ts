@@ -6,6 +6,7 @@ convict.addFormats(validator);
 export type ConfigSchema = {
   NODE_ENV: string,
   SALT: string
+  APP_PORT: number,
   DB_HOST: string,
   DB_PORT: number,
   DB_NAME: string,
@@ -26,6 +27,10 @@ export const configSchema = convict<ConfigSchema>({
     format: String,
     default: '',
     env: 'SALT'
+  },
+  APP_PORT: {
+    doc: 'Application PORT',
+    default: 4000,
   },
   DB_HOST: {
     doc: 'The IP address to bind.',

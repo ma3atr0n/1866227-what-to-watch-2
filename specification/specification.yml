@@ -96,6 +96,34 @@ paths:
           description: Сеанс завершён.
 
   /films/{filmId}:
+    patch:
+      tags: 
+        - films
+      summary: Обновление фильма
+      description: Обновление карточки фильма
+
+      requestBody:
+        description: Информация для обновления карточки фильма
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/filmUpdate'
+        required: true
+
+      responses:
+        '200':
+          description: Фильм успешно обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/film'
+
+        '400':
+          description: Ошибка тела запроса
+        
+        '401':
+          description: Пользователь не авторизован
+    
     delete:
       tags: 
         - films
@@ -132,7 +160,7 @@ paths:
         '401':
           description: Пользователь не авторизован
 
-  /films/{genre}:
+  /films/genre/{genre}:
     get:
       tags: 
         - films
@@ -178,34 +206,6 @@ paths:
         '401':
           description: Пользователь не авторизован
 
-    patch:
-      tags: 
-        - films
-      summary: Обновление фильма
-      description: Обновление карточки фильма
-
-      requestBody:
-        description: Информация для обновления карточки фильма
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/filmUpdate'
-        required: true
-
-      responses:
-        '200':
-          description: Фильм успешно обновлен
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/film'
-
-        '400':
-          description: Ошибка тела запроса
-        
-        '401':
-          description: Пользователь не авторизован
-
     get:
       tags: 
         - films
@@ -238,7 +238,7 @@ paths:
         '401':
           description: Пользователь не авторизован
 
-  /promo:
+  /films/promo:
     get:
       tags: 
         - films
