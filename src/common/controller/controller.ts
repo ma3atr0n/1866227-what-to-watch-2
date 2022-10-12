@@ -19,7 +19,11 @@ export abstract class Controller implements IController {
   }
 
   public addRoute(route: IRoute): void {
-    this._router[route.method](route.path, asyncHandler(route.handler.bind(this)));
+    const routeHandler = asyncHandler(route.handler.bind(this));
+    const middlewares = route.middlewares?.map((middleware) => asyncHandler(middleware.execute.bind(middleware)));
+
+    const allHendlers = middlewares ? [...middlewares, routeHandler] : routeHandler;
+    this._router[route.method](route.path, allHendlers);
     this.logger.info(`Route ${route.method } ${route.path} was added!`);
   }
 

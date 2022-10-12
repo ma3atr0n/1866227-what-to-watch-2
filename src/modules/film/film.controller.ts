@@ -86,6 +86,7 @@ export default class FilmController extends Controller {
     res: Response
   ):Promise<void> {
     const updatedFilm = await this.filmService.updateById(params.filmId, body);
+
     if (!updatedFilm) {
       throw new HttpError(
         StatusCodes.CONFLICT,
@@ -93,9 +94,8 @@ export default class FilmController extends Controller {
         'FilmController'
       );
     }
-    console.log(updatedFilm);
+
     const result = await this.filmService.findById(updatedFilm.id);
-    console.log(result);
     this.ok(res, fillResponse(FilmResponse, result));
   }
 

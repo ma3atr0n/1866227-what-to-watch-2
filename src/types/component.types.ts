@@ -14,4 +14,5 @@ export const Component = {
   filmController: Symbol.for('filmController'),
   filmPromoController: Symbol.for('filmPromoController'),
   filmFavoriteController: Symbol.for('filmFavoriteController'),
+  commentController: Symbol.for('commentController'),
 };
