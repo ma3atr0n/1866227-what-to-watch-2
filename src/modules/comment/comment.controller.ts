@@ -45,8 +45,8 @@ export default class CommentController extends Controller {
       handler: this.create,
       middlewares: [
         new ValidateObjectIdMiddelware('filmId'),
-        new DocumentExistsMiddleware(this.filmService, 'FilmEntity', 'filmId'),
-        new ValidateDTOMiddleware(CreateCommentDTO)
+        new ValidateDTOMiddleware(CreateCommentDTO),
+        new DocumentExistsMiddleware(this.filmService, 'FilmEntity', 'filmId')
       ]
     });
   }

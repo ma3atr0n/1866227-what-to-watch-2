@@ -53,8 +53,8 @@ export default class FilmController extends Controller {
       handler: this.update,
       middlewares: [
         new ValidateObjectIdMiddelware('filmId'),
-        new DocumentExistsMiddleware(this.filmService, 'FilmEntity', 'filmId'),
-        new ValidateDTOMiddleware(UpdateFilmDTO)
+        new ValidateDTOMiddleware(UpdateFilmDTO),
+        new DocumentExistsMiddleware(this.filmService, 'FilmEntity', 'filmId')
       ],
     });
 
