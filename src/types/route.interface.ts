@@ -6,5 +6,5 @@ export interface IRoute {
   path: string,
   method: HttpMethod,
   handler: (req: Request, res: Response, next: NextFunction) => void,
-  middlewares?: [IMiddleware],
+  middlewares?: IMiddleware[],
 }

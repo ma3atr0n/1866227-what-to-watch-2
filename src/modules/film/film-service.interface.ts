@@ -1,10 +1,11 @@
 import { DocumentType } from '@typegoose/typegoose';
+import { IDocumentExists } from '../../types/document-exist.interface.js';
 import { Genre } from '../../types/genre.enum.js';
 import CreateFilmDTO from './dto/create-film.dto.js';
 import UpdateFilmDTO from './dto/update-film.dto.js';
 import { FilmEntity } from './film.entity.js';
 
-export interface IFilmService {
+export interface IFilmService extends IDocumentExists {
   create(dto: CreateFilmDTO): Promise<DocumentType<FilmEntity>>;
   updateById(filmId: string, dto: UpdateFilmDTO): Promise<DocumentType<FilmEntity> | null>;
   deleteById(filmId: string): Promise<DocumentType<FilmEntity> | null>;

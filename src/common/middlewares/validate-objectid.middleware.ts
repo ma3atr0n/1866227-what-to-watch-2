@@ -16,7 +16,7 @@ export default class ValidateObjectIdMiddelware implements IMiddleware {
     if (!Types.ObjectId.isValid(objectId)) {
       throw new HttpError(
         StatusCodes.BAD_REQUEST,
-        `Parameter: ${this.paramName} is not valid ObjectID`,
+        `Parameter: ${this.paramName} with value: ${params[this.paramName]} is not valid ObjectID`,
         'ValidateObjectIdMiddleware'
       );
     }

@@ -12,6 +12,9 @@ import { fillResponse } from '../../utils/common.js';
 import CommentResponse from './response/comment.response.js';
 import { CreateCommentDTO } from './dto/create-comment.dto.js';
 import ValidateObjectIdMiddelware from '../../common/middlewares/validate-objectid.middleware.js';
+import ValidateDTOMiddleware from '../../common/middlewares/validate-dto.middleware.js';
+import { IFilmService } from '../film/film-service.interface.js';
+import DocumentExistsMiddleware from '../../common/middlewares/document-exist.middleware.js';
 
 export type ParamsGetComments = {
   filmId: string
@@ -22,6 +25,7 @@ export default class CommentController extends Controller {
   constructor(
     @inject(Component.ILogger) logger: ILogger,
     @inject(Component.ICommentService) private commentService: ICommentService,
+    @inject(Component.IFilmService) private filmService: IFilmService,
   ) {
     super(logger);
 
@@ -29,14 +33,21 @@ export default class CommentController extends Controller {
       path: '/:filmId',
       method: HttpMethod.Get,
       handler: this.index,
-      middlewares: [new ValidateObjectIdMiddelware('filmId')],
+      middlewares: [
+        new ValidateObjectIdMiddelware('filmId'),
+        new DocumentExistsMiddleware(this.filmService, 'FilmEntity', 'filmId')
+      ],
     });
 
     this.addRoute({
       path: '/:filmId',
       method: HttpMethod.Post,
       handler: this.create,
-      middlewares: [new ValidateObjectIdMiddelware('filmId')],
+      middlewares: [
+        new ValidateObjectIdMiddelware('filmId'),
+        new DocumentExistsMiddleware(this.filmService, 'FilmEntity', 'filmId'),
+        new ValidateDTOMiddleware(CreateCommentDTO)
+      ]
     });
   }
 
