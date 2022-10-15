@@ -44,4 +44,8 @@ export class UserService implements IUserService {
   public async find(): Promise<DocumentType<UserEntity>[]> {
     return this.userModel.find().exec();
   }
+
+  public async exist(documentId: string): Promise<boolean> {
+    return (await this.userModel.exists({_id: documentId})) !== null;
+  }
 }
