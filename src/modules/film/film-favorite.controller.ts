@@ -10,6 +10,7 @@ import FilmResponse from './response/film.response.js';
 import HttpError from '../../common/errors/http-error.js';
 import { StatusCodes } from 'http-status-codes';
 import * as core from 'express-serve-static-core';
+import ValidateObjectIdMiddelware from '../../common/middlewares/validate-objectid.middleware.js';
 
 
 @injectable()
@@ -21,7 +22,12 @@ export default class FilmFavoriteController extends Controller {
     super(logger);
 
     this.addRoute({path: '/', method: HttpMethod.Get, handler: this.getFavorite});
-    this.addRoute({path: '/:filmId/:status', method: HttpMethod.Post, handler: this.setFavorite});
+    this.addRoute({
+      path: '/:filmId/:status',
+      method: HttpMethod.Post,
+      handler: this.setFavorite,
+      middlewares: [new ValidateObjectIdMiddelware('filmId')],
+    });
   }
 
   public async getFavorite(

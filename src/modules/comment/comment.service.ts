@@ -31,6 +31,14 @@ export default class CommentService implements ICommentService {
       .find({filmId: filmId})
       .limit(DEFAULT_COMMENT_COUNT)
       .sort({date: -1})
+      .populate('userId')
+      .exec();
+  }
+
+  public async findById(commentId: string): Promise<DocumentType<CommentEntity> | null> {
+    return this.commentModel
+      .findById(commentId)
+      .populate('userId')
       .exec();
   }
 }

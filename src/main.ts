@@ -11,6 +11,7 @@ import ExceptionFilter from './common/errors/exception-filter.js';
 import { ILogger } from './common/logger/logger.interface.js';
 import { LoggerService } from './common/logger/logger.service.js';
 import { ICommentService } from './modules/comment/comment-service.interface.js';
+import CommentController from './modules/comment/comment.controller.js';
 import { CommentEntity, commentModel } from './modules/comment/comment.entity.js';
 import CommentService from './modules/comment/comment.service.js';
 import FilmFavoriteController from './modules/film/film-favorite.controller.js';
@@ -42,6 +43,7 @@ applicationContainer.bind<IController>(Component.userController).to(UserControll
 applicationContainer.bind<IController>(Component.filmController).to(FilmController);
 applicationContainer.bind<IController>(Component.filmPromoController).to(FilmPromoController);
 applicationContainer.bind<IController>(Component.filmFavoriteController).to(FilmFavoriteController);
+applicationContainer.bind<IController>(Component.commentController).to(CommentController);
 
 const application = applicationContainer.get<Application>(Component.Application);
 await application.init();

@@ -15,6 +15,9 @@ import HttpError from '../../common/errors/http-error.js';
 import { StatusCodes } from 'http-status-codes';
 import { Genre } from '../../types/genre.enum.js';
 import { RequestQuery } from '../../types/request-query.type.js';
+import ValidateObjectIdMiddelware from '../../common/middlewares/validate-objectid.middleware.js';
+import ValidateDTOMiddleware from '../../common/middlewares/validate-dto.middleware.js';
+import DocumentExistsMiddleware from '../../common/middlewares/document-exist.middleware.js';
 
 
 @injectable()
@@ -26,11 +29,45 @@ export default class FilmController extends Controller {
     super(logger);
 
     this.addRoute({path: '/', method: HttpMethod.Get, handler: this.index});
-    this.addRoute({path: '/', method: HttpMethod.Post, handler: this.create});
+    this.addRoute({
+      path: '/',
+      method: HttpMethod.Post,
+      handler: this.create,
+      middlewares: [new ValidateDTOMiddleware(CreateFilmDTO)],
+    });
     this.addRoute({path: '/genre/:genre', method: HttpMethod.Get, handler: this.getByGenre});
-    this.addRoute({path: '/:filmId', method: HttpMethod.Get, handler: this.getFilmDetails});
-    this.addRoute({path: '/:filmId', method: HttpMethod.Patch, handler: this.update});
-    this.addRoute({path: '/:filmId', method: HttpMethod.Delete, handler: this.detele});
+
+    this.addRoute({
+      path: '/:filmId',
+      method: HttpMethod.Get,
+      handler: this.getFilmDetails,
+      middlewares: [
+        new ValidateObjectIdMiddelware('filmId'),
+        new DocumentExistsMiddleware(this.filmService, 'FilmEntity', 'filmId')
+      ],
+    });
+
+    this.addRoute({
+      path: '/:filmId',
+      method: HttpMethod.Patch,
+      handler: this.update,
+      middlewares: [
+        new ValidateObjectIdMiddelware('filmId'),
+        new ValidateDTOMiddleware(UpdateFilmDTO),
+        new DocumentExistsMiddleware(this.filmService, 'FilmEntity', 'filmId')
+      ],
+    });
+
+    this.addRoute({
+      path: '/:filmId',
+      method: HttpMethod.Delete,
+      handler: this.detele,
+      middlewares: [
+        new ValidateObjectIdMiddelware('filmId'),
+        new DocumentExistsMiddleware(this.filmService, 'FilmEntity', 'filmId')
+      ],
+    });
+
     this.addRoute({path: '/promo', method: HttpMethod.Get, handler: this.getPromo});
   }
 
@@ -86,6 +123,7 @@ export default class FilmController extends Controller {
     res: Response
   ):Promise<void> {
     const updatedFilm = await this.filmService.updateById(params.filmId, body);
+
     if (!updatedFilm) {
       throw new HttpError(
         StatusCodes.CONFLICT,
@@ -93,9 +131,8 @@ export default class FilmController extends Controller {
         'FilmController'
       );
     }
-    console.log(updatedFilm);
+
     const result = await this.filmService.findById(updatedFilm.id);
-    console.log(result);
     this.ok(res, fillResponse(FilmResponse, result));
   }
 

@@ -209,4 +209,8 @@ export class FilmService implements IFilmService {
         { $sort: { releaseDate: -1 } },
       ]).exec();
   }
+
+  public async exist(documentId: string): Promise<boolean> {
+    return (await this.filmModel.exists({_id: documentId})) !== null;
+  }
 }
