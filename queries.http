@@ -27,7 +27,7 @@ Content-Type: application/json
   "starrings": ["test1","test2"],
   "director": "test",
   "runTime": 123,
-  "posterLink": "test.jp",
+  "posterLink": "test.jpg",
   "bgLink": "test.jpg",
   "bgColor": "#ffffff",
   "userId": "633f27391a8c4c0a1a1656ae"
@@ -96,3 +96,14 @@ Content-Type: application/json
   "date": "2020-01-01",
   "userId": "633f27391a8c4c0a1a1656ae"
 }
+
+### Отправка аватарки пользователю
+POST http://localhost:4000/users/633f27391a8c4c0a1a1656ae/avatar HTTP/1.1
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="avatar"; filename="inv1.jpg"
+Content-Type: image/png
+
+< C:\Users\ma3atr0n\Documents\inv.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
