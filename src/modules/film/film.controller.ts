@@ -77,6 +77,16 @@ export default class FilmController extends Controller {
   ):Promise<void> {
     const parsedLimit = parseInt(query.limit ?? '-1', 10);
     const result = await this.filmService.find(parsedLimit);
+    console.log(result);
+    this.ok(res, fillResponse(FilmShortResponse, result));
+  }
+
+  public async indexOld(
+    {query}: Request<core.ParamsDictionary, unknown, unknown, RequestQuery>,
+    res: Response
+  ):Promise<void> {
+    const parsedLimit = parseInt(query.limit ?? '-1', 10);
+    const result = await this.filmService.find(parsedLimit);
 
     this.ok(res, fillResponse(FilmShortResponse, result));
   }

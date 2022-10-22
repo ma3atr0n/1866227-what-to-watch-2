@@ -52,7 +52,6 @@ export default class FilmFavoriteController extends Controller {
     res: Response
   ):Promise<void> {
     const result = await this.filmService.findAndChangeFavoriteStatus(params.filmId, parseInt(params.status, 10) as 0 | 1);
-    console.log(result);
     if (!result) {
       throw new HttpError(
         StatusCodes.CONFLICT,

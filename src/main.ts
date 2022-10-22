@@ -14,7 +14,10 @@ import { ICommentService } from './modules/comment/comment-service.interface.js'
 import CommentController from './modules/comment/comment.controller.js';
 import { CommentEntity, commentModel } from './modules/comment/comment.entity.js';
 import CommentService from './modules/comment/comment.service.js';
-import FilmFavoriteController from './modules/film/film-favorite.controller.js';
+import { IFavoriteService } from './modules/favorite/favorite-service.interface.js';
+import favoriteController from './modules/favorite/favorite.controller.js';
+import { FavoriteEntity, favoriteModel } from './modules/favorite/favorite.entity.js';
+import { FavoriteService } from './modules/favorite/favorite.service.js';
 import FilmPromoController from './modules/film/film-promo.controller.js';
 import { IFilmService } from './modules/film/film-service.interface.js';
 import FilmController from './modules/film/film.controller.js';
@@ -37,12 +40,14 @@ applicationContainer.bind<IFilmService>(Component.IFilmService).to(FilmService);
 applicationContainer.bind<types.ModelType<FilmEntity>>(Component.filmModel).toConstantValue(filmModel);
 applicationContainer.bind<ICommentService>(Component.ICommentService).to(CommentService);
 applicationContainer.bind<types.ModelType<CommentEntity>>(Component.commentModel).toConstantValue(commentModel);
+applicationContainer.bind<types.ModelType<FavoriteEntity>>(Component.favoriteModel).toConstantValue(favoriteModel);
+applicationContainer.bind<IFavoriteService>(Component.IFavoriteService).to(FavoriteService);
 
 applicationContainer.bind<IExceptionFilter>(Component.IExceptionFilter).to(ExceptionFilter);
 applicationContainer.bind<IController>(Component.userController).to(UserController);
 applicationContainer.bind<IController>(Component.filmController).to(FilmController);
 applicationContainer.bind<IController>(Component.filmPromoController).to(FilmPromoController);
-applicationContainer.bind<IController>(Component.filmFavoriteController).to(FilmFavoriteController);
+applicationContainer.bind<IController>(Component.favoriteController).to(favoriteController);
 applicationContainer.bind<IController>(Component.commentController).to(CommentController);
 
 const application = applicationContainer.get<Application>(Component.Application);
