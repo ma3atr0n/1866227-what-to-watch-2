@@ -2,6 +2,7 @@ import { Film } from '../types/film.type.js';
 import { Genre } from '../types/genre.enum.js';
 import crypto from 'crypto';
 import { plainToInstance, ClassConstructor } from 'class-transformer';
+import { SignJWT } from 'jose';
 
 export const createFilms = (row: string):Film => {
   const elements = row.replace('\n', '').split('\t');
@@ -39,3 +40,10 @@ export const fillResponse = <T, V>(ResponseObject: ClassConstructor<T>, baseObje
 export const createErrorObject = (message: string) => ({
   error: message,
 });
+
+export const createJWT = async (algoritm: string, jwtSecret: string, payload: object): Promise<string> =>
+  new SignJWT({...payload})
+    .setProtectedHeader({ alg: algoritm })
+    .setIssuedAt()
+    .setExpirationTime('2d')
+    .sign(crypto.createSecretKey(jwtSecret, 'utf-8'));

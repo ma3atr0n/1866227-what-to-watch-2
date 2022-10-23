@@ -10,6 +10,11 @@ import HttpError from '../../common/errors/http-error.js';
 import { StatusCodes } from 'http-status-codes';
 import AddOrDeleteFavoriteResponse from './response/favorite.response.js';
 import { fillResponse } from '../../utils/common.js';
+import PrivateRouteMiddleware from '../../common/middlewares/private-route.middleware.js';
+import FilmShortResponse from '../film/response/film-short.response.js';
+import { IFilmService } from '../film/film-service.interface.js';
+import DocumentExistsMiddleware from '../../common/middlewares/document-exist.middleware.js';
+import ValidateObjectIdMiddelware from '../../common/middlewares/validate-objectid.middleware.js';
 
 
 @injectable()
@@ -17,19 +22,37 @@ export default class FavoriteController extends Controller {
   constructor(
     @inject(Component.ILogger) logger: ILogger,
     @inject(Component.IFavoriteService) private favoriteService: IFavoriteService,
+    @inject(Component.IFilmService) private filmService: IFilmService,
   ) {
     super(logger);
 
-    this.addRoute({path: '/:filmId/:userId/:flag', method: HttpMethod.Post, handler: this.create});
+    this.addRoute({
+      path: '/:filmId/:flag',
+      method: HttpMethod.Post,
+      handler: this.addOrDelete,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateObjectIdMiddelware('filmId'),
+        new DocumentExistsMiddleware(this.filmService, 'FilmEntity', 'filmId'),
+      ]
+    });
+    this.addRoute({
+      path: '/',
+      method: HttpMethod.Get,
+      handler: this.index,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+      ]
+    });
   }
 
-  public async create(
-    {params}: Request<core.ParamsDictionary>,
+  public async addOrDelete(
+    {params, user}: Request<core.ParamsDictionary>,
     res: Response
   ):Promise<void> {
-    const {userId, filmId, flag} = params;
+    const {filmId, flag} = params;
 
-    const result = await this.favoriteService.addOrDelete(userId, filmId, flag);
+    const result = await this.favoriteService.addOrDelete(user.id, filmId, flag);
 
     if (!result) {
       throw new HttpError(
@@ -40,5 +63,14 @@ export default class FavoriteController extends Controller {
     }
 
     this.ok(res, fillResponse(AddOrDeleteFavoriteResponse, result));
+  }
+
+  public async index(
+    { user }: Request,
+    res: Response
+  ):Promise<void> {
+    const result = await this.favoriteService.find(user.id);
+
+    this.ok(res, fillResponse(FilmShortResponse, result));
   }
 }

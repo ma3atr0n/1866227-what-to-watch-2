@@ -8,7 +8,7 @@ import { IUserService } from './user-service.interface.js';
 import { StatusCodes } from 'http-status-codes';
 import CreateUserDTO from './dto/create-user.dto.js';
 import { IConfig } from '../../common/config/config.interface.js';
-import { fillResponse } from '../../utils/common.js';
+import { createJWT, fillResponse } from '../../utils/common.js';
 import UserResponse from './response/user.response.js';
 import HttpError from '../../common/errors/http-error.js';
 import LoginDTO from './dto/login.dto.js';
@@ -16,6 +16,10 @@ import ValidateDTOMiddleware from '../../common/middlewares/validate-dto.middlew
 import UploadFileMiddleware from '../../common/middlewares/upload-file.middleware.js';
 import ValidateObjectIdMiddelware from '../../common/middlewares/validate-objectid.middleware.js';
 import DocumentExistsMiddleware from '../../common/middlewares/document-exist.middleware.js';
+import { JWT_ALGORITM } from './user.constant.js';
+import UserLoggedResponse from './response/user-logged.response.js';
+import PrivateRouteMiddleware from '../../common/middlewares/private-route.middleware.js';
+import PublicRouteMiddleware from '../../common/middlewares/public-route.middleware copy.js';
 
 @injectable()
 export default class UserController extends Controller {
@@ -34,13 +38,23 @@ export default class UserController extends Controller {
       handler: this.login,
       middlewares: [new ValidateDTOMiddleware(LoginDTO)]
     });
-    this.addRoute({path: '/login', method: HttpMethod.Get, handler: this.authCheck});
+    this.addRoute({
+      path: '/login',
+      method: HttpMethod.Get,
+      handler: this.checkAuthenticate,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+      ],
+    });
     this.addRoute({path: '/logout', method: HttpMethod.Delete, handler: this.logout});
     this.addRoute({
       path: '/register',
       method: HttpMethod.Post,
       handler: this.create,
-      middlewares: [new ValidateDTOMiddleware(CreateUserDTO)]
+      middlewares: [
+        new PublicRouteMiddleware(),
+        new ValidateDTOMiddleware(CreateUserDTO)
+      ]
     });
     this.addRoute({
       path: '/:userId/avatar',
@@ -56,11 +70,11 @@ export default class UserController extends Controller {
 
   public async login(
     {body}: Request<Record<string, unknown>, Record<string, unknown>, LoginDTO>,
-    _res: Response
+    res: Response
   ): Promise<void> {
-    const existUser = await this.userService.findByEmail(body.email);
+    const authUser = await this.userService.varifyUser(body, this.config.get('SALT'));
 
-    if (!existUser) {
+    if(!authUser) {
       throw new HttpError(
         StatusCodes.UNAUTHORIZED,
         `User with email: ${body.email} unauthorized`,
@@ -68,22 +82,26 @@ export default class UserController extends Controller {
       );
     }
 
-    throw new HttpError(
-      StatusCodes.NOT_IMPLEMENTED,
-      'This service (LOGIN) not implemented',
-      'userController'
-    );
+    const jwtToken = await createJWT(JWT_ALGORITM, this.config.get('JWT_SECRET'), {id: authUser._id, email: authUser.email});
+
+    this.ok(res, fillResponse(UserLoggedResponse, {token: jwtToken, email: authUser.email}));
   }
 
-  public async authCheck(
-    _req: Request,
-    _res: Response,
+  public async checkAuthenticate(
+    req: Request,
+    res: Response,
   ): Promise<void> {
-    throw new HttpError(
-      StatusCodes.NOT_IMPLEMENTED,
-      'This service (authCheck) not implemented',
-      'userController'
-    );
+    const existUser = await this.userService.findByEmail(req.user.email);
+
+    if (!existUser) {
+      throw new HttpError(
+        StatusCodes.NOT_FOUND,
+        `User with email: ${req.user.email} not found`,
+        'userController'
+      );
+    }
+
+    this.ok(res, fillResponse(UserResponse, existUser));
   }
 
   public async logout(

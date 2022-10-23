@@ -107,13 +107,6 @@ export class FilmEntity extends defaultClasses.TimeStamps {
     required:true
   })
   public bgColor!: string;
-
-  @prop({
-    required: true,
-    default: false,
-  })
-  public isFavorite!: boolean;
-
 }
 
 export const filmModel = getModelForClass(FilmEntity);
