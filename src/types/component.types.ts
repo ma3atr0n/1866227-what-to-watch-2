@@ -13,6 +13,8 @@ export const Component = {
   userController: Symbol.for('userController'),
   filmController: Symbol.for('filmController'),
   filmPromoController: Symbol.for('filmPromoController'),
-  filmFavoriteController: Symbol.for('filmFavoriteController'),
   commentController: Symbol.for('commentController'),
+  favoriteModel: Symbol.for('favoriteModel'),
+  IFavoriteService: Symbol.for('IFavoriteService'),
+  favoriteController: Symbol.for('favoriteController'),
 };

@@ -5,6 +5,7 @@ import { Component } from '../../types/component.types.js';
 import { ICommentService } from './comment-service.interface.js';
 import { CommentEntity } from './comment.entity.js';
 import { CreateCommentDTO } from './dto/create-comment.dto.js';
+import { DeleteResult } from 'mongodb';
 
 const DEFAULT_COMMENT_COUNT = 50;
 
@@ -15,9 +16,10 @@ export default class CommentService implements ICommentService {
     @inject(Component.commentModel) private commentModel: types.ModelType<CommentEntity>,
   ) {}
 
-  public async create(filmId: string, dto: CreateCommentDTO): Promise<DocumentType<CommentEntity>> {
+  public async create(filmId: string, userId: string, dto: CreateCommentDTO): Promise<DocumentType<CommentEntity>> {
     const commentWithId = {
       ...dto,
+      userId,
       filmId
     };
     const result = await this.commentModel.create(commentWithId);
@@ -39,6 +41,12 @@ export default class CommentService implements ICommentService {
     return this.commentModel
       .findById(commentId)
       .populate('userId')
+      .exec();
+  }
+
+  public async deleteByFilm(filmId: string): Promise<DeleteResult> {
+    return this.commentModel
+      .deleteMany({ filmId: { $eq: filmId } })
       .exec();
   }
 }

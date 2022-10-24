@@ -3,6 +3,7 @@ import { inject, injectable } from 'inversify';
 import { ILogger } from '../../common/logger/logger.interface.js';
 import { Component } from '../../types/component.types.js';
 import CreateUserDTO from './dto/create-user.dto.js';
+import LoginDTO from './dto/login.dto.js';
 import { IUserService } from './user-service.interface.js';
 import { UserEntity } from './user.entity.js';
 
@@ -43,6 +44,20 @@ export class UserService implements IUserService {
 
   public async find(): Promise<DocumentType<UserEntity>[]> {
     return this.userModel.find().exec();
+  }
+
+  public async varifyUser(dto: LoginDTO, salt: string): Promise<DocumentType<UserEntity> | null> {
+    const user = await this.findByEmail(dto.email);
+
+    if (!user) {
+      return null;
+    }
+
+    if (user.varifyPassword(dto.password, salt)) {
+      return user;
+    }
+
+    return null;
   }
 
   public async exist(documentId: string): Promise<boolean> {

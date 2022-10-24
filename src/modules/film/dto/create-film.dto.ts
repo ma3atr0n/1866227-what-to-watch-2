@@ -1,5 +1,5 @@
 import { Genre } from '../../../types/genre.enum.js';
-import {MaxLength, MinLength, IsDateString, IsMongoId, IsInt, IsEnum, IsString, IsArray, Matches} from 'class-validator';
+import {MaxLength, MinLength, IsDateString, IsInt, IsEnum, IsString, IsArray, Matches} from 'class-validator';
 
 export default class CreateFilmDTO {
   @MinLength(5, {message: 'Film name is too short. Minimal length is $constraint1 characters, but actual is $value'})
@@ -52,6 +52,5 @@ export default class CreateFilmDTO {
   @MaxLength(256, {message: 'Too long for field bgColor'})
   public bgColor!: string;
 
-  @IsMongoId({message: 'UserID must be ObjectID type!'})
   public userId!: string;
 }

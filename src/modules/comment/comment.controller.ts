@@ -15,6 +15,7 @@ import ValidateObjectIdMiddelware from '../../common/middlewares/validate-object
 import ValidateDTOMiddleware from '../../common/middlewares/validate-dto.middleware.js';
 import { IFilmService } from '../film/film-service.interface.js';
 import DocumentExistsMiddleware from '../../common/middlewares/document-exist.middleware.js';
+import PrivateRouteMiddleware from '../../common/middlewares/private-route.middleware.js';
 
 export type ParamsGetComments = {
   filmId: string
@@ -44,6 +45,7 @@ export default class CommentController extends Controller {
       method: HttpMethod.Post,
       handler: this.create,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddelware('filmId'),
         new ValidateDTOMiddleware(CreateCommentDTO),
         new DocumentExistsMiddleware(this.filmService, 'FilmEntity', 'filmId')
@@ -69,10 +71,17 @@ export default class CommentController extends Controller {
   }
 
   public async create(
-    {body, params}: Request<core.ParamsDictionary | ParamsGetComments, Record<string, unknown>, CreateCommentDTO>,
+    {body, params, user}: Request<core.ParamsDictionary | ParamsGetComments, Record<string, unknown>, CreateCommentDTO>,
     res: Response
   ):  Promise<void> {
-    const result = await this.commentService.create(params.filmId, body);
+    if (!this.filmService.exist(params.filmId)) {
+      throw new HttpError(
+        StatusCodes.CONFLICT,
+        `Can't create comment, film with id: ${params.filmId} not exist`,
+        'CommentController'
+      );
+    }
+    const result = await this.commentService.create(params.filmId, user.id, body);
     const newComment = await this.commentService.findById(result.id);
 
     this.created(res, fillResponse(CommentResponse, newComment));

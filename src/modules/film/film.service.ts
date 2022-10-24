@@ -9,8 +9,7 @@ import { IFilmService } from './film-service.interface.js';
 import { FilmEntity } from './film.entity.js';
 import { Types } from 'mongoose';
 import UpdateFilmDTO from './dto/update-film.dto.js';
-
-const DEFAULT_FILM_LIMIT = 60;
+import { DEFAULT_FILM_LIMIT } from './film.constant.js';
 
 @injectable()
 export class FilmService implements IFilmService {
@@ -40,7 +39,7 @@ export class FilmService implements IFilmService {
       .exec();
   }
 
-  public async findById(filmId: string): Promise<DocumentType<FilmEntity>> {
+  public async findById(filmId: string): Promise<DocumentType<FilmEntity> | null> {
     return (await this.filmModel
       .aggregate([
         {$match:{ _id: new Types.ObjectId(filmId)}},
@@ -88,7 +87,7 @@ export class FilmService implements IFilmService {
     return this.create(dto);
   }
 
-  public async find(limit?: number): Promise<DocumentType<FilmEntity>[]> {
+  public async find(limit?: number, userId?: string): Promise<DocumentType<FilmEntity>[]> {
     const parsedLimit = limit && limit > 0 ? limit : DEFAULT_FILM_LIMIT;
     return this.filmModel
       .aggregate([
@@ -108,6 +107,40 @@ export class FilmService implements IFilmService {
             as: 'user'
           }
         },
+        {
+          $lookup: {
+            from: 'favorites',
+            let: {userId: new Types.ObjectId(userId), filmId: '$_id'},
+            pipeline: [
+              { $match:
+                 { $expr:
+                    { $and:
+                       [
+                         { $eq: [ '$filmId',  '$$filmId' ] },
+                         { $eq: [ '$userId', '$$userId' ] }
+                       ]
+                    }
+                 }
+              }
+            ],
+            as: 'favorites'
+          }
+        },
+        {
+          $addFields: {
+            isFavorite: {
+              $switch:{
+                branches: [
+                  {
+                    case: { $gt : [ { $size : '$favorites' }, 0 ] },
+                    then: true
+                  }
+                ],
+                default: false
+              }
+            }
+          }
+        },
         { $unwind: {
           path :'$user',
           preserveNullAndEmptyArrays: true}
@@ -117,19 +150,19 @@ export class FilmService implements IFilmService {
             commentCount: { $size: '$comments'}, rating: { $avg: '$comments.rating'}
           }
         },
-        { $unset: 'comments' },
+        { $unset: ['comments', 'favorites']},
         { $limit: parsedLimit },
         { $sort: { releaseDate: -1 } },
       ]).exec();
   }
 
-  public async findByGenre(genre: keyof typeof Genre, limit?: number): Promise<DocumentType<FilmEntity>[]> {
-    const result = await this.find(limit);
+  public async findByGenre(genre: keyof typeof Genre, userId: string, limit?: number): Promise<DocumentType<FilmEntity>[]> {
+    const result = await this.find(limit, userId);
 
     return result.filter((elem) => elem.genre === genre);
   }
 
-  public async findDetails(filmId: string): Promise<DocumentType<FilmEntity>[]> {
+  public async findDetails(filmId: string, userId: string): Promise<DocumentType<FilmEntity>[]> {
     return this.filmModel
       .aggregate([
         {$match:{ _id: new Types.ObjectId(filmId)}},
@@ -144,12 +177,46 @@ export class FilmService implements IFilmService {
         {
           $lookup: {
             from: 'users',
-            localField: 'user',
+            localField: 'userId',
             foreignField: '_id',
             pipeline: [
               { $project: { userName: 1, email: 1, avatarLink: 1, password: 1}}
             ],
             as: 'user'
+          }
+        },
+        {
+          $lookup: {
+            from: 'favorites',
+            let: {userId: new Types.ObjectId(userId), filmId: '$_id'},
+            pipeline: [
+              { $match:
+                 { $expr:
+                    { $and:
+                       [
+                         { $eq: [ '$filmId',  '$$filmId' ] },
+                         { $eq: [ '$userId', '$$userId' ] }
+                       ]
+                    }
+                 }
+              }
+            ],
+            as: 'favorites'
+          }
+        },
+        {
+          $addFields: {
+            isFavorite: {
+              $switch:{
+                branches: [
+                  {
+                    case: { $gt : [ { $size : '$favorites' }, 0 ] },
+                    then: true
+                  }
+                ],
+                default: false
+              }
+            }
           }
         },
         { $unwind: {
@@ -161,13 +228,13 @@ export class FilmService implements IFilmService {
             id: { $toString: '$_id'}, commentCount: { $size: '$comments'}, rating: { $avg: '$comments.rating'}
           }
         },
-        { $unset: 'comments' },
+        { $unset: ['comments', 'favorites']},
         { $sort: { releaseDate: -1 } },
       ]).exec();
   }
 
-  public async findPromo(): Promise<DocumentType<FilmEntity> | null> {
-    const result = await this.find();
+  public async findPromo(userId: string): Promise<DocumentType<FilmEntity> | null> {
+    const result = await this.find(undefined, userId);
 
     return result[0];
   }

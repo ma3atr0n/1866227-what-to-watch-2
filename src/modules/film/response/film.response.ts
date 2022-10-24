@@ -52,6 +52,9 @@ export default class FilmResponse {
   public commentCount!: number;
 
   @Expose()
+  public isFavorite!: boolean;
+
+  @Expose()
   @Type(() => UserResponse)
   public user!: UserResponse;
 }

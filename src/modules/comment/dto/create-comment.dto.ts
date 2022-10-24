@@ -1,4 +1,4 @@
-import {Min, Max, MaxLength, MinLength, IsDateString, IsMongoId, IsInt} from 'class-validator';
+import {Min, Max, MaxLength, MinLength, IsDateString, IsInt} from 'class-validator';
 
 export class CreateCommentDTO {
   @MinLength(5, {message: 'Comment is too short. Minimal length is $constraint1 characters, but actual is $value'})
@@ -12,7 +12,4 @@ export class CreateCommentDTO {
 
   @IsDateString({}, {message: 'postDate must be valid ISO date'})
   public date!: string;
-
-  @IsMongoId({message: 'userId field must be valid ObjectID'})
-  public userId!: string;
 }

@@ -23,10 +23,10 @@ export default class FilmPromoController extends Controller {
   }
 
   public async getPromo(
-    _req: Request,
+    req: Request,
     res: Response
   ):Promise<void> {
-    const promoFilm = await this.filmService.findPromo();
+    const promoFilm = await this.filmService.findPromo(req.user?.id);
 
     if (!promoFilm) {
       throw new HttpError(

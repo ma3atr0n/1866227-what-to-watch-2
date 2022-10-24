@@ -8,6 +8,7 @@ import { getURI } from '../utils/db.js';
 import express, { Express } from 'express';
 import { IController } from '../common/controller/controller.interface.js';
 import { IExceptionFilter } from '../common/errors/exception-filter.interface.js';
+import AuthenticateMiddleware from '../common/middlewares/authenticate.middleware.js';
 
 @injectable()
 export default class Application {
@@ -20,7 +21,7 @@ export default class Application {
     @inject(Component.userController) private userController: IController,
     @inject(Component.filmController) private filmController: IController,
     @inject(Component.filmPromoController) private filmPromoController: IController,
-    @inject(Component.filmFavoriteController) private filmFavoriteController: IController,
+    @inject(Component.favoriteController) private favoriteController: IController,
     @inject(Component.commentController) private commentController: IController,
     @inject(Component.IExceptionFilter) private exceptionFilter: IExceptionFilter,
   ) {
@@ -31,7 +32,7 @@ export default class Application {
     this.expressApp.use('/users', this.userController.router);
     this.expressApp.use('/films', this.filmController.router);
     this.expressApp.use('/promo', this.filmPromoController.router);
-    this.expressApp.use('/favorite', this.filmFavoriteController.router);
+    this.expressApp.use('/favorite', this.favoriteController.router);
     this.expressApp.use('/comments', this.commentController.router);
   }
 
@@ -41,6 +42,8 @@ export default class Application {
       '/upload',
       express.static(this.config.get('UPLOAD_DIRECTORY')),
     );
+    const authenticateMiddleware = new AuthenticateMiddleware(this.config.get('JWT_SECRET'));
+    this.expressApp.use(authenticateMiddleware.execute.bind(authenticateMiddleware));
   }
 
   public initExceptionFilters() {
