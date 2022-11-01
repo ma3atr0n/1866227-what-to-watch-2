@@ -39,7 +39,6 @@ export default class CommentController extends Controller {
         new DocumentExistsMiddleware(this.filmService, 'FilmEntity', 'filmId')
       ],
     });
-
     this.addRoute({
       path: '/:filmId',
       method: HttpMethod.Post,
