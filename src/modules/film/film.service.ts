@@ -11,6 +11,8 @@ import { Types } from 'mongoose';
 import UpdateFilmDTO from './dto/update-film.dto.js';
 import { DEFAULT_FILM_LIMIT } from './film.constant.js';
 
+const SIMILAR_FILMS_LIMIT = 4;
+
 @injectable()
 export class FilmService implements IFilmService {
   constructor(
@@ -28,6 +30,13 @@ export class FilmService implements IFilmService {
   public async updateById(filmId: string, dto: UpdateFilmDTO): Promise<DocumentType<FilmEntity> | null> {
     return this.filmModel
       .findByIdAndUpdate(filmId, dto, {new: true})
+      .populate('userId')
+      .exec();
+  }
+
+  public async updateImageById(filmId: string, newFile: object): Promise<DocumentType<FilmEntity> | null> {
+    return this.filmModel
+      .findByIdAndUpdate(filmId, newFile, {new: true})
       .populate('userId')
       .exec();
   }
@@ -65,7 +74,7 @@ export class FilmService implements IFilmService {
         },
         {
           $addFields: {
-            commentCount: { $size: '$comments'}, rating: { $avg: '$comments.rating'}
+            id: { $toString: '$_id'}, commentCount: { '$cond': [{ $eq: ['$comments', []] }, 0, { $size: '$comments'}] }, rating: { '$cond': [{ $eq: ['$comments', []] }, 0, { $avg: '$comments.rating'}] },
           }
         },
         { $unset: 'comments' },
@@ -147,7 +156,7 @@ export class FilmService implements IFilmService {
         },
         {
           $addFields: {
-            commentCount: { $size: '$comments'}, rating: { $avg: '$comments.rating'}
+            id: { $toString: '$_id'}, commentCount: { '$cond': [{ $eq: ['$comments', []] }, 0, { $size: '$comments'}] }, rating: { '$cond': [{ $eq: ['$comments', []] }, 0, { $avg: '$comments.rating'}] },
           }
         },
         { $unset: ['comments', 'favorites']},
@@ -162,8 +171,8 @@ export class FilmService implements IFilmService {
     return result.filter((elem) => elem.genre === genre);
   }
 
-  public async findDetails(filmId: string, userId: string): Promise<DocumentType<FilmEntity>[]> {
-    return this.filmModel
+  public async findDetails(filmId: string, userId: string): Promise<DocumentType<FilmEntity> | null> {
+    return (await this.filmModel
       .aggregate([
         {$match:{ _id: new Types.ObjectId(filmId)}},
         {
@@ -225,12 +234,12 @@ export class FilmService implements IFilmService {
         },
         {
           $addFields: {
-            id: { $toString: '$_id'}, commentCount: { $size: '$comments'}, rating: { $avg: '$comments.rating'}
+            id: { $toString: '$_id'}, commentCount: { '$cond': [{ $eq: ['$comments', []] }, 0, { $size: '$comments'}] }, rating: { '$cond': [{ $eq: ['$comments', []] }, 0, { $avg: '$comments.rating'}] },
           }
         },
         { $unset: ['comments', 'favorites']},
         { $sort: { releaseDate: -1 } },
-      ]).exec();
+      ]).exec())[0];
   }
 
   public async findPromo(userId: string): Promise<DocumentType<FilmEntity> | null> {
@@ -269,7 +278,7 @@ export class FilmService implements IFilmService {
         },
         {
           $addFields: {
-            commentCount: { $size: '$comments'}, rating: { $avg: '$comments.rating'}
+            id: { $toString: '$_id'}, commentCount: { $size: '$comments'}, rating: { $avg: '$comments.rating'}
           }
         },
         { $unset: 'comments' },
@@ -279,5 +288,76 @@ export class FilmService implements IFilmService {
 
   public async exist(documentId: string): Promise<boolean> {
     return (await this.filmModel.exists({_id: documentId})) !== null;
+  }
+
+  public async findSimilar(filmId: string, genre: Genre, userId: string): Promise<DocumentType<FilmEntity>[]> {
+    return this.filmModel
+      .aggregate([
+        {
+          $match: { $and: [ { 'genre': genre }, { '_id': { $ne: new Types.ObjectId(filmId) } } ] }
+        },
+        {
+          $lookup: {
+            from: 'comments',
+            localField: '_id',
+            foreignField: 'filmId',
+            as: 'comments'
+          }
+        },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'userId',
+            foreignField: '_id',
+            as: 'user'
+          }
+        },
+        {
+          $lookup: {
+            from: 'favorites',
+            let: {userId: new Types.ObjectId(userId), filmId: '$_id'},
+            pipeline: [
+              { $match:
+                 { $expr:
+                    { $and:
+                       [
+                         { $eq: [ '$filmId',  '$$filmId' ] },
+                         { $eq: [ '$userId', '$$userId' ] }
+                       ]
+                    }
+                 }
+              }
+            ],
+            as: 'favorites'
+          }
+        },
+        {
+          $addFields: {
+            isFavorite: {
+              $switch:{
+                branches: [
+                  {
+                    case: { $gt : [ { $size : '$favorites' }, 0 ] },
+                    then: true
+                  }
+                ],
+                default: false
+              }
+            }
+          }
+        },
+        { $unwind: {
+          path :'$user',
+          preserveNullAndEmptyArrays: true}
+        },
+        {
+          $addFields: {
+            id: { $toString: '$_id'}, commentCount: { '$cond': [{ $eq: ['$comments', []] }, 0, { $size: '$comments'}] }, rating: { '$cond': [{ $eq: ['$comments', []] }, 0, { $avg: '$comments.rating'}] },
+          }
+        },
+        { $unset: ['comments', 'favorites']},
+        { $limit: SIMILAR_FILMS_LIMIT },
+        { $sort: { releaseDate: -1 } },
+      ]).exec();
   }
 }

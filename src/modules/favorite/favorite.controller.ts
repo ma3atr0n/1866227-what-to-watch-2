@@ -15,16 +15,18 @@ import FilmShortResponse from '../film/response/film-short.response.js';
 import { IFilmService } from '../film/film-service.interface.js';
 import DocumentExistsMiddleware from '../../common/middlewares/document-exist.middleware.js';
 import ValidateObjectIdMiddelware from '../../common/middlewares/validate-objectid.middleware.js';
+import { IConfig } from '../../common/config/config.interface.js';
 
 
 @injectable()
 export default class FavoriteController extends Controller {
   constructor(
     @inject(Component.ILogger) logger: ILogger,
+    @inject(Component.IConfig) config: IConfig,
     @inject(Component.IFavoriteService) private favoriteService: IFavoriteService,
     @inject(Component.IFilmService) private filmService: IFilmService,
   ) {
-    super(logger);
+    super(logger, config);
 
     this.addRoute({
       path: '/:filmId/:flag',

@@ -16,19 +16,20 @@ import ValidateDTOMiddleware from '../../common/middlewares/validate-dto.middlew
 import UploadFileMiddleware from '../../common/middlewares/upload-file.middleware.js';
 import ValidateObjectIdMiddelware from '../../common/middlewares/validate-objectid.middleware.js';
 import DocumentExistsMiddleware from '../../common/middlewares/document-exist.middleware.js';
-import { JWT_ALGORITM } from './user.constant.js';
+import { DEFAULT_AVATAR_FILE_NAME, JWT_ALGORITM } from './user.constant.js';
 import UserLoggedResponse from './response/user-logged.response.js';
 import PrivateRouteMiddleware from '../../common/middlewares/private-route.middleware.js';
 import PublicRouteMiddleware from '../../common/middlewares/public-route.middleware copy.js';
+import UploadUserAvatarResponse from './response/upload-user-avatar.response.js';
 
 @injectable()
 export default class UserController extends Controller {
   constructor(
     @inject(Component.ILogger) logger: ILogger,
+    @inject(Component.IConfig) config: IConfig,
     @inject(Component.IUserService) private userService: IUserService,
-    @inject(Component.IConfig) private config: IConfig,
   ) {
-    super(logger);
+    super(logger, config);
 
     this.logger.info('Register routes for UserController...');
 
@@ -106,13 +107,10 @@ export default class UserController extends Controller {
 
   public async logout(
     _req: Request,
-    _res: Response
+    res: Response
   ): Promise<void> {
-    throw new HttpError(
-      StatusCodes.NOT_IMPLEMENTED,
-      'This service (LOGOUT) not implemented',
-      'userController'
-    );
+
+    this.ok(res, {message: 'Logged out successfully'});
   }
 
   public async create(
@@ -129,13 +127,15 @@ export default class UserController extends Controller {
       );
     }
 
-    const result = await this.userService.create(body, this.config.get('SALT'),);
+    const result = await this.userService.create({...body, avatarLink: DEFAULT_AVATAR_FILE_NAME}, this.config.get('SALT'));
     this.created(res, fillResponse(UserResponse, result));
   }
 
-  public upload(req: Request, res: Response) {
-    this.created(res, {
-      filepath: req.file?.path
-    });
+  public async upload(req: Request, res: Response) {
+    const { userId } = req.params;
+    const updateDTO = {avatarLink: req.file === undefined ? DEFAULT_AVATAR_FILE_NAME : req.file.filename};
+    const result = await this.userService.updateById(userId, updateDTO);
+
+    this.created(res, fillResponse(UploadUserAvatarResponse, result));
   }
 }

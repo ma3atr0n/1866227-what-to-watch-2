@@ -1,5 +1,5 @@
 import { Genre } from '../../../types/genre.enum.js';
-import {MaxLength, MinLength, IsDateString, IsInt, IsEnum, IsString, IsArray, Matches} from 'class-validator';
+import {MaxLength, MinLength, IsDateString, IsInt, IsEnum, IsString, IsArray} from 'class-validator';
 
 export default class CreateFilmDTO {
   @MinLength(5, {message: 'Film name is too short. Minimal length is $constraint1 characters, but actual is $value'})
@@ -19,12 +19,12 @@ export default class CreateFilmDTO {
   @IsInt({message: 'year must be an integer'})
   public year!: number;
 
-  @IsString({message: 'Preview video link is required'})
-  @MaxLength(256, {message: 'Too long for field «previewVideoLink»'})
+  // @IsString({message: 'Preview video link is required'})
+  // @MaxLength(256, {message: 'Too long for field «previewVideoLink»'})
   public previewVideoLink!: string;
 
-  @IsString({message: 'Video link is required'})
-  @MaxLength(256, {message: 'Too long for field «videoLink»'})
+  // @IsString({message: 'Video link is required'})
+  // @MaxLength(256, {message: 'Too long for field «videoLink»'})
   public videoLink!: string;
 
   @IsArray({message: 'Field starrings must be an array'})
@@ -38,14 +38,14 @@ export default class CreateFilmDTO {
   @IsInt({message: 'runTime must be an integer'})
   public runTime!: number;
 
-  @IsString({message: 'Poster link is required'})
-  @MaxLength(256, {message: 'Too long for field posterLink'})
-  @Matches( '.*.jpg$')
+  // @IsString({message: 'Poster link is required'})
+  // @MaxLength(256, {message: 'Too long for field posterLink'})
+  // @Matches( '.*.jpg$')
   public posterLink!: string;
 
-  @IsString({message: 'Poster link is required'})
-  @MaxLength(256, {message: 'Too long for field bgLink'})
-  @Matches( '.*.jpg$')
+  // @IsString({message: 'Poster link is required'})
+  // @MaxLength(256, {message: 'Too long for field bgLink'})
+  // @Matches( '.*.jpg$')
   public bgLink!: string;
 
   @IsString({message: 'Background colot is required'})

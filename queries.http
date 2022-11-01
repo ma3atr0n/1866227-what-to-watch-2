@@ -1,28 +1,24 @@
-GET http://localhost:4000/users HTTP/1.1
-Content-Type: application/json
-
 ###
 POST http://localhost:4000/users/register HTTP/1.1
 Content-Type: application/json
 
 {
-  "userName": "new1User",
-  "email": "new1User@mail.ru",
-  "avatarLink": "http://ava.jpg",
+  "userName": "test_user",
+  "email": "test_user@mail.ru",
   "password": "123456"
 }
 
 ###
 GET http://localhost:4000/users/login HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzNDA4ZDc5ODY5Y2I5NDU2YWJmZmIyMyIsImVtYWlsIjoibmV3MVVzZXJAbWFpbC5ydSIsImlhdCI6MTY2NjUxNjg2MSwiZXhwIjoxNjY2Njg5NjYxfQ.xuEEO5cnI3Z0VNLz5ZvQhCxZ7s-Hb9s6K7ZqzdBUTZM
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzNWU0MWVkOTg1Y2E0NWQwYjhiYWJmNyIsImVtYWlsIjoidGVzdF91c2VyQG1haWwucnUiLCJpYXQiOjE2NjcyMDE4ODEsImV4cCI6MTY2NzM3NDY4MX0.Kj_v7yg9BCSnYD316BPH0fNpJm7F03rMw5rxsaVT3aY
 
 ###
 POST http://localhost:4000/users/login HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "newUser@mail.ru",
+  "email": "test_user@mail.ru",
   "password": "123456"
 }
 
@@ -34,28 +30,86 @@ Content-Type: application/json
 ###
 POST http://localhost:4000/films HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzNDA4ZDc5ODY5Y2I5NDU2YWJmZmIyMyIsImVtYWlsIjoibmV3MVVzZXJAbWFpbC5ydSIsImlhdCI6MTY2NjUxNjg2MSwiZXhwIjoxNjY2Njg5NjYxfQ.xuEEO5cnI3Z0VNLz5ZvQhCxZ7s-Hb9s6K7ZqzdBUTZM
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzNWU0MWVkOTg1Y2E0NWQwYjhiYWJmNyIsImVtYWlsIjoidGVzdF91c2VyQG1haWwucnUiLCJpYXQiOjE2NjcxMjE3OTUsImV4cCI6MTY2NzI5NDU5NX0.xOUGHAaPKNvKA8nURqnpReCL9d3La85cXBK-WX1MR0g
 
 {
-  "name": "test123123213",
+  "name": "Gangs of new york",
+  "description": "In 1862, Amsterdam Vallon returns to the Five Points area of New York City seeking revenge against Bill the Butcher, his father's killer.",
+  "releaseDate": "2020-01-01",
+  "genre": "crime",
+  "year": 2002,
+  "previewVideoLink": "dog.mp4",
+  "videoLink": "bike.mp4",
+  "starrings": ["Leonardo DiCaprio", "Cameron Diaz", "Daniel Day-Lewis"],
+  "director": "Martin Scorsese",
+  "runTime": 167,
+  "posterLink": "Gangs_of_New_York_Poster.jpg",
+  "bgLink": "gangs_of_new_york.jpg",
+  "bgColor": "#A6B7AC"
+}
+
+###
+POST http://localhost:4000/films HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzNWU0MWVkOTg1Y2E0NWQwYjhiYWJmNyIsImVtYWlsIjoidGVzdF91c2VyQG1haWwucnUiLCJpYXQiOjE2NjcxMjE3OTUsImV4cCI6MTY2NzI5NDU5NX0.xOUGHAaPKNvKA8nURqnpReCL9d3La85cXBK-WX1MR0g
+
+{
+  "name": "Beach",
+  "description": "Vicenarian Richard travels to Thailand and finds himself in possession of a strange map. Rumours state that it leads to a solitary beach paradise, a tropical bliss. Excited and intrigued, he sets out to find it.",
+  "releaseDate": "2020-01-01",
+  "genre": "drama",
+  "year": 2000,
+  "previewVideoLink": "dog.mp4",
+  "videoLink": "bike.mp4",
+  "starrings": ["Leonardo DiCaprio", "Daniel York", "Patcharawan Patarakijjanon"],
+  "director": "Danny Boyle",
+  "runTime": 119,
+  "posterLink": "beach_poster.jpg",
+  "bgLink": "beach.jpg",
+  "bgColor": "#EBC996"
+}
+###
+POST http://localhost:4000/films HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzNWU0MWVkOTg1Y2E0NWQwYjhiYWJmNyIsImVtYWlsIjoidGVzdF91c2VyQG1haWwucnUiLCJpYXQiOjE2NjcxMjE3OTUsImV4cCI6MTY2NzI5NDU5NX0.xOUGHAaPKNvKA8nURqnpReCL9d3La85cXBK-WX1MR0g
+
+{
+  "name": "Shutter Island",
+  "description": "In 1954, a U.S. Marshal investigates the disappearance of a murderer, who escaped from a hospital for the criminally insane.",
+  "releaseDate": "2020-01-01",
+  "genre": "thriller",
+  "year": 2010,
+  "previewVideoLink": "dog.mp4",
+  "videoLink": "matrix.mp4",
+  "starrings": ["Leonardo DiCaprio", "Emily Mortimer", "Mark Ruffalo"],
+  "director": "Martin Scorsese",
+  "runTime": 138,
+  "posterLink": "Shutter_Island_poster.jpg",
+  "bgLink": "Shutter_Island.jpg",
+  "bgColor": "#977461"
+}
+
+###
+POST http://localhost:4000/films HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzNWU0MWVkOTg1Y2E0NWQwYjhiYWJmNyIsImVtYWlsIjoidGVzdF91c2VyQG1haWwucnUiLCJpYXQiOjE2NjcyMDY1ODgsImV4cCI6MTY2NzM3OTM4OH0.7vONjtbnxNZhoq34q3bLxVYRU0_sciyCXifi-Y8zoM0
+
+{
+  "name": "new film updated",
   "description": "testtesttesttesttesttesttesttesttesttesttesttest",
   "releaseDate": "2020-01-01",
   "genre": "drama",
   "year": 2022,
-  "previewVideoLink": "test.pm4",
-  "videoLink": "test",
   "starrings": ["test1","test2"],
   "director": "test",
   "runTime": 123,
-  "posterLink": "test.jpg",
-  "bgLink": "test.jpg",
   "bgColor": "#ffffff"
 }
 
 ###
 PATCH http://localhost:4000/films/63496fa5c4ecab3cfd90a98b HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzNDA4ZDc5ODY5Y2I5NDU2YWJmZmIyMyIsImVtYWlsIjoibmV3MVVzZXJAbWFpbC5ydSIsImlhdCI6MTY2NjUxOTgxNiwiZXhwIjoxNjY2NjkyNjE2fQ.ZOS9Lk9V7fLZ8Yu4UiWaStJIcaQRgyyNKREx_M9EbPE
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzNWU0MWVkOTg1Y2E0NWQwYjhiYWJmNyIsImVtYWlsIjoidGVzdF91c2VyQG1haWwucnUiLCJpYXQiOjE2NjcyMDY1ODgsImV4cCI6MTY2NzM3OTM4OH0.7vONjtbnxNZhoq34q3bLxVYRU0_sciyCXifi-Y8zoM0
 
 {
   "name": "new film updated",
@@ -81,15 +135,17 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzNDA4ZDc5ODY5Y2I5NDU2YWJmZ
 ###
 GET http://localhost:4000/films HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzM2YyNzM5MWE4YzRjMGExYTE2NTZhZSIsImVtYWlsIjoibmV3VXNlckBtYWlsLnJ1IiwiaWF0IjoxNjY2NTM3MDA0LCJleHAiOjE2NjY3MDk4MDR9.VHOMlNFio6u1JbdIhnjXGT5uX3AgJ7f5RdXcsRtC_DI
+//Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzM2YyNzM5MWE4YzRjMGExYTE2NTZhZSIsImVtYWlsIjoibmV3VXNlckBtYWlsLnJ1IiwiaWF0IjoxNjY2NTM3MDA0LCJleHAiOjE2NjY3MDk4MDR9.VHOMlNFio6u1JbdIhnjXGT5uX3AgJ7f5RdXcsRtC_DI
 
 ###
 GET http://localhost:4000/films/genre/drama HTTP/1.1
 Content-Type: application/json
+//Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzM2YyNzM5MWE4YzRjMGExYTE2NTZhZSIsImVtYWlsIjoibmV3VXNlckBtYWlsLnJ1IiwiaWF0IjoxNjY2NTM3MDA0LCJleHAiOjE2NjY3MDk4MDR9.VHOMlNFio6u1JbdIhnjXGT5uX3AgJ7f5RdXcsRtC_DI
 
 ###
-GET http://localhost:4000/films/63417a03ea7fc6310a277cfd HTTP/1.1
+GET http://localhost:4000/films/635be2763532bbe0b46af839 HTTP/1.1
 Content-Type: application/json
+//Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzM2YyNzM5MWE4YzRjMGExYTE2NTZhZSIsImVtYWlsIjoibmV3VXNlckBtYWlsLnJ1IiwiaWF0IjoxNjY2NTM3MDA0LCJleHAiOjE2NjY3MDk4MDR9.VHOMlNFio6u1JbdIhnjXGT5uX3AgJ7f5RdXcsRtC_DI
 
 ###
 GET http://localhost:4000/promo HTTP/1.1
@@ -111,13 +167,14 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzM2YyNzM5MWE4YzRjMGExYTE2NTZhZSIsImVtYWlsIjoibmV3VXNlckBtYWlsLnJ1IiwiaWF0IjoxNjY2NTM3MDA0LCJleHAiOjE2NjY3MDk4MDR9.VHOMlNFio6u1JbdIhnjXGT5uX3AgJ7f5RdXcsRtC_DI
 
 ###
-GET http://localhost:4000/comments/63417a03ea7fc6310a277cfd123 HTTP/1.1
+GET http://localhost:4000/comments/63550b6f101cce7acdda998b HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzM2YyNzM5MWE4YzRjMGExYTE2NTZhZSIsImVtYWlsIjoibmV3VXNlckBtYWlsLnJ1IiwiaWF0IjoxNjY2NTM3MDA0LCJleHAiOjE2NjY3MDk4MDR9.VHOMlNFio6u1JbdIhnjXGT5uX3AgJ7f5RdXcsRtC_DI
 
 ###
-POST http://localhost:4000/comments/63417a03ea7fc6310a277cfd HTTP/1.1
+POST http://localhost:4000/comments/635be2763532bbe0b46af839 HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzNDA4ZDc5ODY5Y2I5NDU2YWJmZmIyMyIsImVtYWlsIjoibmV3MVVzZXJAbWFpbC5ydSIsImlhdCI6MTY2NjQzNDEwMCwiZXhwIjoxNjY2NjA2OTAwfQ.Yzk2EB6-8ith6G232rgZKs3MKB0CZzcKriM2P7i5Uvs
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzNWJlMjRjMzUzMmJiZTBiNDZhZjgzMyIsImVtYWlsIjoibmV3MVVzZXJAbWFpbC5ydSIsImlhdCI6MTY2Njk2NjExMCwiZXhwIjoxNjY3MTM4OTEwfQ.jrGPEf6MAMcnUpoMpFVgg8iMFB2GP6CI_trfMfOdo5A
 
 {
   "comment": "123asdqwdqdwqdqwdqwwdwqdqwdqw",
@@ -126,12 +183,24 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzNDA4ZDc5ODY5Y2I5NDU2YWJmZ
 }
 
 ### Отправка аватарки пользователю
-POST http://localhost:4000/users/633f27391a8c4c0a1a1656ae/avatar HTTP/1.1
+POST http://localhost:4000/users/635e6c9638178473fcc1e8a9/avatar HTTP/1.1
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
 Content-Disposition: form-data; name="avatar"; filename="inv1.jpg"
-Content-Type: image/png
+Content-Type: image/jpeg
 
-< C:\Users\ma3atr0n\Documents\inv.jpg
+< C:\Users\ma3atr0n\Pictures\avatar-test.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Отправка аватарки пользователю
+POST http://localhost:4000/films/635e470d985ca45d0b8bac0a/poster HTTP/1.1
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjYzNWU0MWVkOTg1Y2E0NWQwYjhiYWJmNyIsImVtYWlsIjoidGVzdF91c2VyQG1haWwucnUiLCJpYXQiOjE2NjcyMDE4ODEsImV4cCI6MTY2NzM3NDY4MX0.Kj_v7yg9BCSnYD316BPH0fNpJm7F03rMw5rxsaVT3aY
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="posterLink"; filename="avatar-test.jpg"
+Content-Type: image/jpeg
+
+< C:\Users\ma3atr0n\Pictures\avatar-test.jpg
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--

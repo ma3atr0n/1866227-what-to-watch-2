@@ -9,15 +9,17 @@ import { IFilmService } from './film-service.interface.js';
 import FilmResponse from './response/film.response.js';
 import HttpError from '../../common/errors/http-error.js';
 import { StatusCodes } from 'http-status-codes';
+import { IConfig } from '../../common/config/config.interface.js';
 
 
 @injectable()
 export default class FilmPromoController extends Controller {
   constructor(
     @inject(Component.ILogger) logger: ILogger,
+    @inject(Component.IConfig) config: IConfig,
     @inject(Component.IFilmService) private filmService: IFilmService,
   ) {
-    super(logger);
+    super(logger, config);
 
     this.addRoute({path: '/', method: HttpMethod.Get, handler: this.getPromo});
   }

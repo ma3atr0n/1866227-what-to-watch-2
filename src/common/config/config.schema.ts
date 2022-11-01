@@ -14,6 +14,8 @@ export type ConfigSchema = {
   DB_PASSWORD: string,
   UPLOAD_DIRECTORY: string,
   JWT_SECRET: string,
+  STATIC_DIRECTORY_PATH: string,
+  HOST: string,
 }
 
 
@@ -76,5 +78,17 @@ export const configSchema = convict<ConfigSchema>({
     format: String,
     default: null,
     env: 'JWT_SECRET',
+  },
+  STATIC_DIRECTORY_PATH: {
+    doc: 'Static directory path to bind.',
+    format: String,
+    default: null,
+    env: 'STATIC_DIRECTORY_PATH',
+  },
+  HOST: {
+    doc: 'Host to bind.',
+    format: String,
+    default: 'localhost',
+    env: 'HOST',
   }
 });

@@ -21,16 +21,19 @@ import DocumentExistsMiddleware from '../../common/middlewares/document-exist.mi
 import PrivateRouteMiddleware from '../../common/middlewares/private-route.middleware.js';
 import ValidateFilmOfUserMiddleware from '../../common/middlewares/validate-film-of-user.js';
 import { ICommentService } from '../comment/comment-service.interface.js';
-
+import { IConfig } from '../../common/config/config.interface.js';
+import UploadFileMiddleware from '../../common/middlewares/upload-file.middleware.js';
+import { DEFAULT_BACKGROUND_FILE_NAME, DEFAULT_POSTER_FILE_NAME, DEFAULT_PREVIEW_FILE_NAME, DEFAULT_VIDEO_FILE_NAME } from './film.constant.js';
 
 @injectable()
 export default class FilmController extends Controller {
   constructor(
     @inject(Component.ILogger) logger: ILogger,
+    @inject(Component.IConfig) config: IConfig,
     @inject(Component.IFilmService) private filmService: IFilmService,
     @inject(Component.ICommentService) private commentService: ICommentService,
   ) {
-    super(logger);
+    super(logger, config);
 
     this.addRoute({path: '/', method: HttpMethod.Get, handler: this.index});
     this.addRoute({
@@ -40,6 +43,42 @@ export default class FilmController extends Controller {
       middlewares: [
         new PrivateRouteMiddleware(),
         new ValidateDTOMiddleware(CreateFilmDTO),
+      ],
+    });
+    this.addRoute({
+      path: '/:filmId/poster',
+      method: HttpMethod.Post,
+      handler: this.upload,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new UploadFileMiddleware(this.config.get('UPLOAD_DIRECTORY'), 'posterLink'),
+      ],
+    });
+    this.addRoute({
+      path: '/:filmId/bg',
+      method: HttpMethod.Post,
+      handler: this.upload,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new UploadFileMiddleware(this.config.get('UPLOAD_DIRECTORY'), 'bgLink'),
+      ],
+    });
+    this.addRoute({
+      path: '/:filmId/video',
+      method: HttpMethod.Post,
+      handler: this.upload,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new UploadFileMiddleware(this.config.get('UPLOAD_DIRECTORY'), 'videoLink'),
+      ],
+    });
+    this.addRoute({
+      path: '/:filmId/preview',
+      method: HttpMethod.Post,
+      handler: this.upload,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new UploadFileMiddleware(this.config.get('UPLOAD_DIRECTORY'), 'previewVideoLink'),
       ],
     });
     this.addRoute({
@@ -70,7 +109,6 @@ export default class FilmController extends Controller {
         new ValidateFilmOfUserMiddleware(this.filmService)
       ],
     });
-
     this.addRoute({
       path: '/:filmId',
       method: HttpMethod.Delete,
@@ -82,6 +120,15 @@ export default class FilmController extends Controller {
         new ValidateFilmOfUserMiddleware(this.filmService)
       ],
     });
+    this.addRoute({
+      path: '/:filmId/similar',
+      method: HttpMethod.Get,
+      handler: this.similar,
+      middlewares: [
+        new ValidateObjectIdMiddelware('filmId'),
+        new DocumentExistsMiddleware(this.filmService, 'FilmEntity', 'filmId'),
+      ],
+    });
   }
 
   public async index(
@@ -90,7 +137,7 @@ export default class FilmController extends Controller {
   ):Promise<void> {
     const parsedLimit = parseInt(query.limit ?? '-1', 10);
     const result = await this.filmService.find(parsedLimit, user?.id);
-    console.log(result);
+
     this.ok(res, fillResponse(FilmShortResponse, result));
   }
 
@@ -98,7 +145,15 @@ export default class FilmController extends Controller {
     {body, user}: Request<Record<string, unknown>, Record<string, unknown>, CreateFilmDTO>,
     res: Response
   ):Promise<void> {
-    const result = await this.filmService.create({...body, userId: user.id});
+    const defaultFiles = {
+      posterLink: DEFAULT_POSTER_FILE_NAME,
+      bgLink : DEFAULT_BACKGROUND_FILE_NAME,
+      videoLink: DEFAULT_VIDEO_FILE_NAME,
+      previewVideoLink: DEFAULT_PREVIEW_FILE_NAME,
+    };
+
+    const createDTO = {...body, userId: user.id, ...defaultFiles};
+    const result = await this.filmService.create(createDTO);
     const newFilm = await this.filmService.findById(result.id);
 
     this.created(res, fillResponse(FilmResponse, newFilm));
@@ -127,7 +182,7 @@ export default class FilmController extends Controller {
         'FilmController'
       );
     }
-    console.log(existFilm);
+
     this.ok(res, fillResponse(FilmResponse, existFilm));
   }
 
@@ -152,5 +207,34 @@ export default class FilmController extends Controller {
     }
 
     this.ok(res, fillResponse(FilmResponse, result));
+  }
+
+  public async upload(req: Request, res: Response) {
+    const { filmId } = req.params;
+    if (!req.file) {
+      return;
+    }
+    const updateDTO = {[req.file.fieldname] : req.file.filename};
+    await this.filmService.updateImageById(filmId, updateDTO);
+
+    this.created(res, updateDTO);
+  }
+
+  public async similar(
+    {params, user}:  Request,
+    res: Response
+  ):Promise<void> {
+    const mainFilm = await this.filmService.findById(params.filmId);
+
+    if (!mainFilm) {
+      throw new HttpError(
+        StatusCodes.CONFLICT,
+        `Film with ID ${params.filmId} not exist`,
+        'FilmController'
+      );
+    }
+
+    const similarFilms = await this.filmService.findSimilar(params.filmId, mainFilm.genre as Genre, user?.id);
+    this.ok(res, fillResponse(FilmResponse, similarFilms));
   }
 }

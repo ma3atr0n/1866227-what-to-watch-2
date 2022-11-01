@@ -4,7 +4,9 @@ import { ILogger } from '../../common/logger/logger.interface.js';
 import { Component } from '../../types/component.types.js';
 import CreateUserDTO from './dto/create-user.dto.js';
 import LoginDTO from './dto/login.dto.js';
+import UpdateUserDTO from './dto/update-user.dto.js';
 import { IUserService } from './user-service.interface.js';
+import { DEFAULT_AVATAR_FILE_NAME } from './user.constant.js';
 import { UserEntity } from './user.entity.js';
 
 @injectable()
@@ -15,13 +17,17 @@ export class UserService implements IUserService {
   ) {}
 
   public async create(dto: CreateUserDTO, salt: string): Promise<DocumentType<UserEntity>> {
-    const user = new this.userModel(dto);
+    const user = new this.userModel({...dto, avatarPath: DEFAULT_AVATAR_FILE_NAME});
     user.setPassword(dto.password, salt);
 
     const result = await this.userModel.create(user);
     this.logger.info(`New user created: ${user.email}`);
 
     return result;
+  }
+
+  public async updateById(userId: string, dto: UpdateUserDTO): Promise<DocumentType<UserEntity> | null> {
+    return this.userModel.findByIdAndUpdate(userId, dto, {new: true});
   }
 
   public async findByEmail(email: string): Promise<DocumentType<UserEntity> | null> {
