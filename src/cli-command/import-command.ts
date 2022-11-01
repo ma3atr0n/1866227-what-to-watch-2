@@ -46,7 +46,7 @@ export default class ImportCommand implements ICliCommand {
 
     await this.filmService.findOrCreate({
       ...film,
-      user
+      userId: user._id.toString()
     });
   }
 

@@ -19,12 +19,8 @@ export default class CreateFilmDTO {
   @IsInt({message: 'year must be an integer'})
   public year!: number;
 
-  // @IsString({message: 'Preview video link is required'})
-  // @MaxLength(256, {message: 'Too long for field «previewVideoLink»'})
   public previewVideoLink!: string;
 
-  // @IsString({message: 'Video link is required'})
-  // @MaxLength(256, {message: 'Too long for field «videoLink»'})
   public videoLink!: string;
 
   @IsArray({message: 'Field starrings must be an array'})
@@ -38,14 +34,8 @@ export default class CreateFilmDTO {
   @IsInt({message: 'runTime must be an integer'})
   public runTime!: number;
 
-  // @IsString({message: 'Poster link is required'})
-  // @MaxLength(256, {message: 'Too long for field posterLink'})
-  // @Matches( '.*.jpg$')
   public posterLink!: string;
 
-  // @IsString({message: 'Poster link is required'})
-  // @MaxLength(256, {message: 'Too long for field bgLink'})
-  // @Matches( '.*.jpg$')
   public bgLink!: string;
 
   @IsString({message: 'Background colot is required'})

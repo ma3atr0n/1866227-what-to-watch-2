@@ -11,7 +11,7 @@ import { DEFAULT_STATIC_IMAGES } from '../app/application.constant.js';
 
 export const createFilms = (row: string):Film => {
   const elements = row.replace('\n', '').split('\t');
-  const [name, description, releaseDate, genre, year, rate, previewVideoLink, videoLink, starring, director, runTime, commentsCount, posterLink, bgLink, bgColor, userName, email, avatarLink, password] = elements;
+  const [name, description, releaseDate, genre, year, rate, previewVideoLink, videoLink, starrings, director, runTime, commentsCount, posterLink, bgLink, bgColor, userName, email, avatarLink, password] = elements;
 
   return {
     name,
@@ -22,7 +22,7 @@ export const createFilms = (row: string):Film => {
     rate: Number.parseFloat(rate),
     previewVideoLink,
     videoLink,
-    starring: starring ? starring.split(';') : [],
+    starrings: starrings ? starrings.split(';') : [],
     director,
     runTime: Number.parseInt(runTime, 10),
     commentsCount: Number.parseInt(commentsCount, 10),

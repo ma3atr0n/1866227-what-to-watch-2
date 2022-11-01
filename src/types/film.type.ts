@@ -10,7 +10,7 @@ export type Film = {
   rate: number,
   previewVideoLink: string,
   videoLink: string,
-  starring: string[],
+  starrings: string[],
   director: string,
   runTime: number,
   commentsCount: number,
