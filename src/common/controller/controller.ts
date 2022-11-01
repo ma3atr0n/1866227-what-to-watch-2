@@ -5,12 +5,19 @@ import { IController } from './controller.interface.js';
 import { StatusCodes } from 'http-status-codes';
 import { injectable } from 'inversify';
 import asyncHandler from 'express-async-handler';
+import { UnknownObject } from '../../types/unknown-object.type.js';
+import { getFullServerPath, transformObject } from '../../utils/common.js';
+import { STATIC_RESOURCE_FIELDS } from '../../app/application.constant.js';
+import { IConfig } from '../config/config.interface.js';
 
 @injectable()
 export abstract class Controller implements IController {
   private _router: Router;
 
-  constructor(protected readonly logger: ILogger) {
+  constructor(
+    protected readonly logger: ILogger,
+    protected readonly config: IConfig,
+  ) {
     this._router = Router();
   }
 
@@ -27,7 +34,17 @@ export abstract class Controller implements IController {
     this.logger.info(`Route ${route.method } ${route.path} was added!`);
   }
 
+  protected addStaticPath(data: UnknownObject): void {
+    transformObject(
+      STATIC_RESOURCE_FIELDS,
+      `${getFullServerPath(this.config.get('HOST'), this.config.get('APP_PORT'))}/static`,
+      `${getFullServerPath(this.config.get('HOST'), this.config.get('APP_PORT'))}/upload`,
+      data
+    );
+  }
+
   public send<T>(res: Response, statusCode: number, data: T): void {
+    this.addStaticPath(data as UnknownObject);
     res
       .status(statusCode)
       .contentType('application/json')

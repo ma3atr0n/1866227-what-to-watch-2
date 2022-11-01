@@ -4,6 +4,9 @@ import UserResponse from '../../user/response/user.response.js';
 
 export default class FilmShortResponse {
   @Expose()
+  public id!: string;
+
+  @Expose()
   public name!: string;
 
   @Expose()
@@ -16,7 +19,7 @@ export default class FilmShortResponse {
   public previewVideoLink!: string;
 
   @Expose()
-  public posterLink!: number;
+  public posterLink!: string;
 
   @Expose()
   public commentCount!: number;

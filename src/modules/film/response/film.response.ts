@@ -31,7 +31,7 @@ export default class FilmResponse {
   public videoLink!: string;
 
   @Expose()
-  public starring!: string[];
+  public starrings!: string[];
 
   @Expose()
   public director!: string;
@@ -40,13 +40,13 @@ export default class FilmResponse {
   public runTime!: number;
 
   @Expose()
-  public posterLink!: number;
+  public posterLink!: string;
 
   @Expose()
-  public bgLink!: number;
+  public bgLink!: string;
 
   @Expose()
-  public bgColor!: number;
+  public bgColor!: string;
 
   @Expose()
   public commentCount!: number;

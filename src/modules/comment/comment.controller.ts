@@ -6,8 +6,6 @@ import { ICommentService } from './comment-service.interface.js';
 import { HttpMethod } from '../../types/http-method.enum.js';
 import * as core from 'express-serve-static-core';
 import { Request, Response } from 'express';
-import HttpError from '../../common/errors/http-error.js';
-import { StatusCodes } from 'http-status-codes';
 import { fillResponse } from '../../utils/common.js';
 import CommentResponse from './response/comment.response.js';
 import { CreateCommentDTO } from './dto/create-comment.dto.js';
@@ -16,6 +14,7 @@ import ValidateDTOMiddleware from '../../common/middlewares/validate-dto.middlew
 import { IFilmService } from '../film/film-service.interface.js';
 import DocumentExistsMiddleware from '../../common/middlewares/document-exist.middleware.js';
 import PrivateRouteMiddleware from '../../common/middlewares/private-route.middleware.js';
+import { IConfig } from '../../common/config/config.interface.js';
 
 export type ParamsGetComments = {
   filmId: string
@@ -25,10 +24,11 @@ export type ParamsGetComments = {
 export default class CommentController extends Controller {
   constructor(
     @inject(Component.ILogger) logger: ILogger,
+    @inject(Component.IConfig) config: IConfig,
     @inject(Component.ICommentService) private commentService: ICommentService,
     @inject(Component.IFilmService) private filmService: IFilmService,
   ) {
-    super(logger);
+    super(logger, config);
 
     this.addRoute({
       path: '/:filmId',
@@ -59,14 +59,6 @@ export default class CommentController extends Controller {
   ):  Promise<void> {
     const comments = await this.commentService.find(params.filmId);
 
-    if(comments.length === 0) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        `Comments for film ID: ${params.filmId} not exist`,
-        'CommentController'
-      );
-    }
-
     this.ok(res, fillResponse(CommentResponse, comments));
   }
 
@@ -74,13 +66,6 @@ export default class CommentController extends Controller {
     {body, params, user}: Request<core.ParamsDictionary | ParamsGetComments, Record<string, unknown>, CreateCommentDTO>,
     res: Response
   ):  Promise<void> {
-    if (!this.filmService.exist(params.filmId)) {
-      throw new HttpError(
-        StatusCodes.CONFLICT,
-        `Can't create comment, film with id: ${params.filmId} not exist`,
-        'CommentController'
-      );
-    }
     const result = await this.commentService.create(params.filmId, user.id, body);
     const newComment = await this.commentService.findById(result.id);
 
